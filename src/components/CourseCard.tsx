@@ -1,0 +1,58 @@
+import { Course } from "@/types/course";
+import { Lock } from "lucide-react";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+
+interface CourseCardProps {
+  course: Course;
+}
+
+export const CourseCard = ({ course }: CourseCardProps) => {
+  const navigate = useNavigate();
+
+  return (
+    <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg">
+      <CardHeader className="p-0">
+        <div className="relative">
+          <img
+            src={course.thumbnail}
+            alt={course.title}
+            className="h-48 w-full object-cover"
+          />
+          {course.isLocked && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+              <Lock className="h-8 w-8 text-white" />
+            </div>
+          )}
+        </div>
+      </CardHeader>
+      <CardContent className="p-4">
+        <h3 className="text-xl font-semibold">{course.title}</h3>
+        <p className="mt-2 text-sm text-gray-600">{course.description}</p>
+        <div className="mt-4 flex items-center justify-between text-sm">
+          <span>{course.instructor}</span>
+          <span>{course.duration}</span>
+        </div>
+        {course.progress !== undefined && (
+          <div className="mt-4">
+            <Progress value={course.progress} className="h-2" />
+            <span className="mt-1 text-xs text-gray-600">
+              {course.progress}% Complete
+            </span>
+          </div>
+        )}
+      </CardContent>
+      <CardFooter className="p-4">
+        <Button
+          onClick={() => navigate(`/course/${course.id}`)}
+          className="w-full"
+          variant={course.isLocked ? "secondary" : "default"}
+        >
+          {course.isLocked ? "Unlock Course" : "Continue Learning"}
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+};

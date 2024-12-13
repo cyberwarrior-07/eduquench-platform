@@ -1,7 +1,7 @@
 import { CourseCard } from "@/components/CourseCard";
 
 // Temporary mock data - will be replaced with API calls
-const mockCourses = [
+export const mockCourses = [
   {
     id: "1",
     title: "Introduction to Web Development",

@@ -9,21 +9,14 @@ export interface Course {
   progress?: number;
   isLocked: boolean;
   videoUrl?: string;
-  requirements: readonly string[];
-  objectives: readonly string[];
+  requirements: string[];
+  objectives: string[];
   level: 'Beginner' | 'Intermediate' | 'Advanced';
   category: string;
   enrollmentStatus: 'Open' | 'Closed' | 'In Progress';
-}
-
-export interface Lesson {
-  id: string;
-  title: string;
-  description: string;
-  videoUrl: string;
-  transcript: string;
-  duration: string;
-  isLocked: boolean;
-  order: number;
-  courseId: string;
+  syllabus?: {
+    week: number;
+    topic: string;
+    content: string;
+  }[];
 }

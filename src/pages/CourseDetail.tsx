@@ -1,12 +1,11 @@
 import { useParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Play, BookOpen, FileText, Clock, Lock } from "lucide-react";
 import { mockCourses } from "./Courses";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { BookOpen, Clock, GraduationCap, Users } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
-const CourseDetail = () => {
+export default function CourseDetail() {
   const { id } = useParams();
   const course = mockCourses.find((c) => c.id === id);
 
@@ -15,164 +14,109 @@ const CourseDetail = () => {
   }
 
   return (
-    <div className="container py-8 animate-fade-in">
-      <div className="grid gap-6 lg:grid-cols-3">
+    <div className="container mx-auto py-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Main Content */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="aspect-video rounded-lg bg-gray-100 dark:bg-gray-800 relative">
-            {course.isLocked ? (
-              <div className="absolute inset-0 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm rounded-lg">
-                <div className="text-center">
-                  <Lock className="mx-auto h-12 w-12 text-gray-400 mb-3" />
-                  <p className="text-white font-medium">
-                    Unlock this course to access content
-                  </p>
-                  <Button className="mt-4">Unlock Course</Button>
-                </div>
-              </div>
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Button size="lg" className="gap-2">
-                  <Play className="h-5 w-5" />
-                  Play Video
-                </Button>
+        <div className="md:col-span-2 space-y-6">
+          <div className="relative">
+            <img
+              src={course.thumbnail}
+              alt={course.title}
+              className="w-full h-[400px] object-cover rounded-lg"
+            />
+            {course.isLocked && (
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-lg">
+                <Button size="lg">Unlock Course</Button>
               </div>
             )}
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>{course.title}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">{course.description}</p>
-            </CardContent>
-          </Card>
+          <div>
+            <h1 className="text-3xl font-bold">{course.title}</h1>
+            <p className="text-gray-600 mt-2">{course.description}</p>
+          </div>
 
-          <Tabs defaultValue="content" className="w-full">
-            <TabsList className="w-full justify-start">
-              <TabsTrigger value="content">Course Content</TabsTrigger>
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="resources">Resources</TabsTrigger>
-            </TabsList>
-            <TabsContent value="content" className="space-y-4">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <Card key={index}>
-                  <CardHeader className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="rounded-full bg-primary/10 p-2">
-                          <Play className="h-4 w-4 text-primary" />
-                        </div>
-                        <div>
-                          <h3 className="font-medium">Lesson {index + 1}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            Introduction to the course
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <span className="text-sm text-muted-foreground">
-                          10:30
-                        </span>
-                        {course.isLocked && <Lock className="h-4 w-4" />}
-                      </div>
-                    </div>
-                  </CardHeader>
-                </Card>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="flex items-center gap-2">
+              <Clock className="h-5 w-5 text-gray-500" />
+              <span>{course.duration}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <BookOpen className="h-5 w-5 text-gray-500" />
+              <span>{course.lessons} lessons</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <GraduationCap className="h-5 w-5 text-gray-500" />
+              <span>{course.level}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-gray-500" />
+              <span>{course.enrollmentStatus}</span>
+            </div>
+          </div>
+
+          {course.progress !== undefined && (
+            <div>
+              <div className="flex justify-between mb-2">
+                <span>Course Progress</span>
+                <span>{course.progress}%</span>
+              </div>
+              <Progress value={course.progress} className="h-2" />
+            </div>
+          )}
+
+          <div>
+            <h2 className="text-2xl font-semibold mb-4">What you'll learn</h2>
+            <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {course.objectives.map((objective, index) => (
+                <li key={index} className="flex items-start gap-2">
+                  <span className="text-green-500">✓</span>
+                  {objective}
+                </li>
               ))}
-            </TabsContent>
-            <TabsContent value="overview">
-              <Card>
-                <CardContent className="space-y-4 pt-6">
-                  <h3 className="text-lg font-semibold">About this course</h3>
-                  <p className="text-muted-foreground">
-                    This comprehensive course will take you through all the
-                    essential concepts and practical applications. Perfect for
-                    beginners and intermediate learners alike.
-                  </p>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            <TabsContent value="resources">
-              <Card>
-                <CardContent className="space-y-4 pt-6">
-                  <h3 className="text-lg font-semibold">Course Materials</h3>
-                  <div className="space-y-2">
-                    {Array.from({ length: 3 }).map((_, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between p-3 rounded-lg border"
-                      >
-                        <div className="flex items-center gap-3">
-                          <FileText className="h-5 w-5 text-primary" />
-                          <span>Resource {index + 1}</span>
-                        </div>
-                        <Button variant="outline" size="sm">
-                          Download
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+            </ul>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-semibold mb-4">Requirements</h2>
+            <ul className="list-disc pl-5 space-y-2">
+              {course.requirements.map((requirement, index) => (
+                <li key={index}>{requirement}</li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         {/* Sidebar */}
         <div className="space-y-6">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="flex items-center gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-primary" />
-                    <span>{course.duration}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <BookOpen className="h-4 w-4 text-primary" />
-                    <span>{course.lessons} lessons</span>
-                  </div>
-                </div>
-
-                {course.progress !== undefined && (
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Progress</span>
-                      <span>{course.progress}%</span>
-                    </div>
-                    <Progress value={course.progress} />
-                  </div>
-                )}
-
-                <Button className="w-full" disabled={!course.isLocked}>
-                  {course.isLocked ? "Unlock Course" : "Continue Learning"}
-                </Button>
+          <div className="border rounded-lg p-6 space-y-6">
+            <div className="flex items-center gap-4">
+              <img
+                src={`https://api.dicebear.com/7.x/initials/svg?seed=${course.instructor}`}
+                alt={course.instructor}
+                className="w-12 h-12 rounded-full"
+              />
+              <div>
+                <p className="font-semibold">{course.instructor}</p>
+                <p className="text-sm text-gray-600">Course Instructor</p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Instructor</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-full bg-gray-200" />
-                <div>
-                  <h4 className="font-medium">{course.instructor}</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Course Instructor
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+            <Button className="w-full" disabled={course.isLocked}>
+              {course.isLocked ? "Unlock Course" : "Continue Learning"}
+            </Button>
+
+            <div className="space-y-2">
+              <Badge variant="outline" className="w-full justify-center">
+                {course.category}
+              </Badge>
+              <Badge variant="outline" className="w-full justify-center">
+                {course.level}
+              </Badge>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default CourseDetail;
+}

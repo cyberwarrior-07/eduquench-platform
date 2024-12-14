@@ -77,21 +77,21 @@ export const mockCourses: Course[] = [
 ];
 
 const Courses = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   const filteredCourses = mockCourses.filter(course =>
-    selectedCategory ? course.category === selectedCategory : true
+    selectedCategory === "all" ? true : course.category === selectedCategory
   );
 
   return (
     <div className="container mx-auto py-8">
-      <Select onValueChange={setSelectedCategory} defaultValue="">
+      <Select onValueChange={setSelectedCategory} defaultValue="all">
         <SelectTrigger>
           <SelectValue placeholder="Select a category" />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectItem value="">All Categories</SelectItem>
+            <SelectItem value="all">All Categories</SelectItem>
             <SelectItem value="Web Development">Web Development</SelectItem>
             <SelectItem value="Frontend Development">Frontend Development</SelectItem>
             <SelectItem value="Computer Science">Computer Science</SelectItem>

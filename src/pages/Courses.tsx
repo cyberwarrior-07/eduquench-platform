@@ -9,9 +9,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState } from "react";
+import { Course } from "@/types/course";
 
 // Temporary mock data - will be replaced with API calls
-export const mockCourses = [
+export const mockCourses: Course[] = [
   {
     id: "1",
     title: "Introduction to Web Development",

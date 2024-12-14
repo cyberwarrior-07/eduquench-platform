@@ -9,8 +9,8 @@ export interface Course {
   progress?: number;
   isLocked: boolean;
   videoUrl?: string;
-  requirements?: string[];
-  objectives?: string[];
+  requirements: readonly string[];
+  objectives: readonly string[];
   level: 'Beginner' | 'Intermediate' | 'Advanced';
   category: string;
   enrollmentStatus: 'Open' | 'Closed' | 'In Progress';

@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Quiz, Timer } from "lucide-react";
+import { BookCheck, Timer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const mockQuizzes = [
@@ -38,7 +38,7 @@ const Quizzes = () => {
               <CardTitle className="text-xl">
                 {quiz.title}
               </CardTitle>
-              <Quiz className="h-5 w-5 text-muted-foreground" />
+              <BookCheck className="h-5 w-5 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="flex flex-col gap-4">

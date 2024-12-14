@@ -8,6 +8,12 @@ export interface Course {
   lessons: number;
   progress?: number;
   isLocked: boolean;
+  videoUrl?: string;
+  requirements?: string[];
+  objectives?: string[];
+  level: 'Beginner' | 'Intermediate' | 'Advanced';
+  category: string;
+  enrollmentStatus: 'Open' | 'Closed' | 'In Progress';
 }
 
 export interface Lesson {
@@ -18,4 +24,6 @@ export interface Lesson {
   transcript: string;
   duration: string;
   isLocked: boolean;
+  order: number;
+  courseId: string;
 }

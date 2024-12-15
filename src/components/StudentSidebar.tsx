@@ -23,20 +23,20 @@ export function StudentSidebar() {
   const location = useLocation();
 
   return (
-    <div className="flex h-screen flex-col gap-y-5 border-r bg-background p-5">
+    <div className="flex h-screen flex-col gap-y-5 border-r bg-white p-5 shadow-sm">
       <Link to="/" className="flex items-center gap-2">
-        <Home className="h-6 w-6" />
-        <span className="text-xl font-bold">LMS</span>
+        <Home className="h-6 w-6 text-primary" />
+        <span className="text-xl font-bold text-gray-900">LMS</span>
       </Link>
 
-      <div className="flex items-center gap-3 rounded-lg border p-3">
+      <div className="flex items-center gap-3 rounded-lg border bg-gray-50 p-3">
         <Avatar>
           <AvatarImage src="/placeholder.svg" />
           <AvatarFallback>ST</AvatarFallback>
         </Avatar>
         <div className="flex flex-col">
-          <span className="font-medium">Student Name</span>
-          <span className="text-sm text-muted-foreground">student@example.com</span>
+          <span className="font-medium text-gray-900">Student Name</span>
+          <span className="text-sm text-gray-500">student@example.com</span>
         </div>
       </div>
 
@@ -45,7 +45,12 @@ export function StudentSidebar() {
           <Button
             key={item.name}
             variant={location.pathname === item.href ? "secondary" : "ghost"}
-            className="justify-start gap-2"
+            className={cn(
+              "justify-start gap-2",
+              location.pathname === item.href
+                ? "bg-primary/10 text-primary hover:bg-primary/20"
+                : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+            )}
             asChild
           >
             <Link to={item.href}>
@@ -56,7 +61,7 @@ export function StudentSidebar() {
         ))}
       </nav>
 
-      <Button variant="ghost" className="justify-start gap-2">
+      <Button variant="ghost" className="justify-start gap-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900">
         <Settings className="h-4 w-4" />
         Settings
       </Button>

@@ -3,32 +3,23 @@ import { cn } from "@/lib/utils";
 import { 
   BookOpen, 
   ClipboardList,
-  Download,
-  FileText,
-  Home,
+  Calendar,
   LayoutDashboard,
   MessageSquare,
   Settings,
-  Video,
-  Calendar,
   FolderOpen,
   GraduationCap,
-  Users
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Assignments', href: '/assignments', icon: ClipboardList },
-  { name: 'Schedule', href: '#', icon: Calendar },
-  { name: 'Recordings', href: '#', icon: Video },
-  { name: 'Discussions', href: '#', icon: MessageSquare },
-  { name: 'Resources', href: '#', icon: FolderOpen },
-  { name: 'Notes', href: '#', icon: FileText },
-  { name: 'Downloads', href: '#', icon: Download },
-  { name: 'Classes', href: '#', icon: Users },
   { name: 'Courses', href: '/courses', icon: GraduationCap },
+  { name: 'Assignments', href: '/assignments', icon: ClipboardList },
+  { name: 'Schedule', href: '/schedule', icon: Calendar },
+  { name: 'Mentor Support', href: '/discussions', icon: MessageSquare },
+  { name: 'Resources', href: '/resources', icon: FolderOpen },
 ];
 
 export function StudentSidebar() {

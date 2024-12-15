@@ -9,6 +9,9 @@ import Courses from "./pages/Courses";
 import Dashboard from "./pages/Dashboard";
 import Assignments from "./pages/Assignments";
 import Quizzes from "./pages/Quizzes";
+import Schedule from "./pages/Schedule";
+import Discussions from "./pages/Discussions";
+import Resources from "./pages/Resources";
 import { StudentSidebar } from "./components/StudentSidebar";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./components/ui/button";
@@ -25,31 +28,32 @@ const AppContent = () => {
   return (
     <div className="flex min-h-screen">
       {isLMSRoute && (
-        <>
-          <div className={`relative transition-all duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-            <StudentSidebar />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute -right-10 top-4 bg-white border shadow-sm hover:bg-gray-100"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-            >
-              {sidebarOpen ? (
-                <ChevronLeft className="h-4 w-4" />
-              ) : (
-                <ChevronRight className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
-        </>
+        <div className={`fixed h-full transition-all duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-64'}`}>
+          <StudentSidebar />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute -right-10 top-4 bg-white border shadow-sm hover:bg-gray-100"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
+            {sidebarOpen ? (
+              <ChevronLeft className="h-4 w-4" />
+            ) : (
+              <ChevronRight className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
       )}
-      <main className={`flex-1 overflow-y-auto transition-all duration-300 ${isLMSRoute ? 'pl-4' : ''}`}>
+      <main className={`flex-1 transition-all duration-300 ${isLMSRoute ? (sidebarOpen ? 'ml-64' : 'ml-0') : ''}`}>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/courses" element={<Courses />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/assignments" element={<Assignments />} />
           <Route path="/quizzes" element={<Quizzes />} />
+          <Route path="/schedule" element={<Schedule />} />
+          <Route path="/discussions" element={<Discussions />} />
+          <Route path="/resources" element={<Resources />} />
         </Routes>
       </main>
     </div>

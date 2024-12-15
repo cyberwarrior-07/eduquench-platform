@@ -10,8 +10,8 @@ import Dashboard from "./pages/Dashboard";
 import Assignments from "./pages/Assignments";
 import Quizzes from "./pages/Quizzes";
 import { StudentSidebar } from "./components/StudentSidebar";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./components/ui/button";
-import { Menu } from "lucide-react";
 
 const queryClient = new QueryClient();
 
@@ -26,17 +26,21 @@ const AppContent = () => {
     <div className="flex min-h-screen">
       {isLMSRoute && (
         <>
-          <div className={`transition-all duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+          <div className={`relative transition-all duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
             <StudentSidebar />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute -right-10 top-4 bg-white border shadow-sm hover:bg-gray-100"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+            >
+              {sidebarOpen ? (
+                <ChevronLeft className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </Button>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="fixed left-4 top-4 z-50"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
         </>
       )}
       <main className={`flex-1 overflow-y-auto transition-all duration-300 ${isLMSRoute ? 'pl-4' : ''}`}>

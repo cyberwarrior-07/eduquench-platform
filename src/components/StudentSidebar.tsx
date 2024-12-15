@@ -2,41 +2,52 @@ import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { 
   BookOpen, 
-  ClipboardList, 
-  GraduationCap,
+  ClipboardList,
+  Download,
+  FileText,
   Home,
-  LayoutDashboard, 
-  Settings, 
-  User 
+  LayoutDashboard,
+  MessageSquare,
+  Settings,
+  Video,
+  Calendar,
+  FolderOpen,
+  GraduationCap,
+  Users
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Courses', href: '/courses', icon: BookOpen },
   { name: 'Assignments', href: '/assignments', icon: ClipboardList },
-  { name: 'Quizzes', href: '/quizzes', icon: GraduationCap },
+  { name: 'Schedule', href: '#', icon: Calendar },
+  { name: 'Recordings', href: '#', icon: Video },
+  { name: 'Discussions', href: '#', icon: MessageSquare },
+  { name: 'Resources', href: '#', icon: FolderOpen },
+  { name: 'Notes', href: '#', icon: FileText },
+  { name: 'Downloads', href: '#', icon: Download },
+  { name: 'Classes', href: '#', icon: Users },
+  { name: 'Courses', href: '/courses', icon: GraduationCap },
 ];
 
 export function StudentSidebar() {
   const location = useLocation();
 
   return (
-    <div className="flex h-screen flex-col gap-y-5 border-r bg-white p-5 shadow-sm">
+    <div className="flex h-screen w-64 flex-col gap-y-5 border-r bg-white p-5">
       <Link to="/" className="flex items-center gap-2">
-        <Home className="h-6 w-6 text-primary" />
-        <span className="text-xl font-bold text-gray-900">LMS</span>
+        <span className="text-xl font-bold text-gray-900">DESIGNO</span>
       </Link>
 
       <div className="flex items-center gap-3 rounded-lg border bg-gray-50 p-3">
         <Avatar>
           <AvatarImage src="/placeholder.svg" />
-          <AvatarFallback>ST</AvatarFallback>
+          <AvatarFallback>HS</AvatarFallback>
         </Avatar>
         <div className="flex flex-col">
-          <span className="font-medium text-gray-900">Student Name</span>
-          <span className="text-sm text-gray-500">student@example.com</span>
+          <span className="font-medium text-gray-900">Harsh</span>
+          <span className="text-sm text-gray-500">Student</span>
         </div>
       </div>
 
@@ -48,7 +59,7 @@ export function StudentSidebar() {
             className={cn(
               "justify-start gap-2",
               location.pathname === item.href
-                ? "bg-primary/10 text-primary hover:bg-primary/20"
+                ? "bg-primary text-white hover:bg-primary-700"
                 : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
             )}
             asChild

@@ -63,7 +63,6 @@ function App() {
           {/* Public routes - wrapped with PublicLayout */}
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Index />} />
-            <Route path="/courses" element={<Courses />} />
           </Route>
           
           {/* Auth routes */}
@@ -72,6 +71,7 @@ function App() {
           {/* Student routes - wrapped with StudentLayout */}
           <Route element={<StudentLayout />}>
             <Route path="/dashboard" element={<StudentDashboard />} />
+            <Route path="/courses" element={<Courses />} />
             <Route path="/assignments" element={<Assignments />} />
             <Route path="/course-content" element={<CourseContent />} />
             <Route path="/discussions" element={<Discussions />} />

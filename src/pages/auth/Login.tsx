@@ -65,8 +65,13 @@ export default function Login() {
         <Auth
           supabaseClient={supabase}
           appearance={{ theme: ThemeSupa }}
-          providers={[]}
+          providers={['google', 'github']}
           theme="light"
+          socialLayout="horizontal"
+          providerScopes={{
+            google: 'profile email',
+            github: 'read:user user:email'
+          }}
         />
       </Card>
     </div>

@@ -49,21 +49,35 @@ const Courses = () => {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
-  const { data: dbCourses, isLoading } = useQuery({
+  const { data: dbCourses, isLoading, error } = useQuery({
     queryKey: ['courses'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      console.log('Fetching courses...');
+      let query = supabase
         .from('courses')
-        .select('*')
-        .eq('is_published', true);
+        .select('*');
+      
+      // Only fetch published courses
+      query = query.eq('is_published', true);
+      
+      const { data, error } = await query;
       
       if (error) {
+        console.error('Error fetching courses:', error);
         toast.error('Error fetching courses');
         throw error;
       }
+
+      console.log('Courses fetched:', data);
       return data || [];
     },
   });
+
+  if (error) {
+    console.error('Query error:', error);
+    toast.error('Failed to load courses');
+    return <div>Error loading courses</div>;
+  }
 
   if (isLoading) {
     return <div>Loading...</div>;

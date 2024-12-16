@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
+import { useSession } from "@supabase/auth-helpers-react";
 
 interface PageFormData {
   title: string;
@@ -19,6 +20,7 @@ interface PageFormData {
 export default function CMSPageForm() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const session = useSession();
 
   const [formData, setFormData] = useState<PageFormData>({
     title: "",
@@ -29,11 +31,16 @@ export default function CMSPageForm() {
 
   const mutation = useMutation({
     mutationFn: async (data: PageFormData) => {
+      if (!session?.user?.id) {
+        throw new Error('You must be logged in to create pages');
+      }
+
       const { error } = await supabase
         .from('cms_pages')
         .insert({
           ...data,
           content: { body: data.content },
+          created_by: session.user.id
         });
       
       if (error) throw error;
@@ -44,8 +51,8 @@ export default function CMSPageForm() {
       navigate('/admin/pages');
     },
     onError: (error) => {
-      toast.error('Failed to create page');
-      console.error(error);
+      console.error('Error creating page:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to create page');
     },
   });
 
@@ -69,6 +76,18 @@ export default function CMSPageForm() {
       slug: generateSlug(title),
     });
   };
+
+  if (!session) {
+    return (
+      <div className="container mx-auto py-8">
+        <Card className="p-6">
+          <p className="text-center text-muted-foreground">
+            Please log in to create pages
+          </p>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-8 space-y-8">

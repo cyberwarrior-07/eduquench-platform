@@ -91,8 +91,8 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 sm:p-6 lg:p-8">
-      <Card className="w-full max-w-md border-2 shadow-lg">
-        <CardHeader className="space-y-4 pb-8">
+      <Card className="w-full max-w-md border-2 border-[#1A1F2C] shadow-lg">
+        <CardHeader className="space-y-4 pb-8 border-b border-[#403E43]">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
             <LogIn className="h-7 w-7 text-primary" />
           </div>
@@ -119,15 +119,20 @@ const Login = () => {
                     borderRadius: '6px',
                     width: '100%',
                     marginTop: '10px',
+                    border: '1px solid #403E43'
                   },
                   input: {
                     borderRadius: '6px',
                     padding: '10px',
-                    border: '1px solid rgb(var(--border))',
+                    border: '1px solid #403E43',
+                    backgroundColor: 'transparent'
                   },
                   message: {
                     color: 'rgb(var(--foreground))',
                     marginBottom: '10px',
+                    border: '1px solid #403E43',
+                    borderRadius: '6px',
+                    padding: '10px'
                   }
                 }
               }}
@@ -135,7 +140,7 @@ const Login = () => {
               providers={[]}
               redirectTo={window.location.origin}
             />
-            <div className="mt-4 text-center text-sm text-gray-500">
+            <div className="mt-4 text-center text-sm text-gray-500 border-t border-[#403E43] pt-4">
               <p>For admin access, please use the <a href="/cms" className="text-primary hover:underline">CMS login page</a></p>
             </div>
           </div>

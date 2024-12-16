@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { Button } from "@/components/ui/button";
-import { Plus, GripVertical, Video, FileText, Trash2 } from "lucide-react";
+import { Plus, GripVertical, Video, FileText, BookOpen, Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -22,7 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 interface ContentItem {
   id: string;
-  type: 'video' | 'quiz';
+  type: 'video' | 'quiz' | 'chapter' | 'lesson';
   title: string;
   description?: string;
 }
@@ -53,7 +53,7 @@ export function ContentBuilder() {
       ...items,
       {
         id: crypto.randomUUID(),
-        type: newItem.type as 'video' | 'quiz',
+        type: newItem.type as 'video' | 'quiz' | 'chapter' | 'lesson',
         title: newItem.title,
         description: newItem.description,
       },
@@ -65,6 +65,20 @@ export function ContentBuilder() {
 
   const handleRemoveItem = (id: string) => {
     setItems(items.filter((item) => item.id !== id));
+  };
+
+  const getItemIcon = (type: string) => {
+    switch (type) {
+      case 'video':
+        return <Video className="h-4 w-4" />;
+      case 'quiz':
+        return <FileText className="h-4 w-4" />;
+      case 'chapter':
+      case 'lesson':
+        return <BookOpen className="h-4 w-4" />;
+      default:
+        return null;
+    }
   };
 
   return (
@@ -87,7 +101,7 @@ export function ContentBuilder() {
                 <Label>Content Type</Label>
                 <Select
                   value={newItem.type}
-                  onValueChange={(value: 'video' | 'quiz') =>
+                  onValueChange={(value: 'video' | 'quiz' | 'chapter' | 'lesson') =>
                     setNewItem({ ...newItem, type: value })
                   }
                 >
@@ -97,6 +111,8 @@ export function ContentBuilder() {
                   <SelectContent>
                     <SelectItem value="video">Video</SelectItem>
                     <SelectItem value="quiz">Quiz</SelectItem>
+                    <SelectItem value="chapter">Chapter</SelectItem>
+                    <SelectItem value="lesson">Lesson</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -145,11 +161,7 @@ export function ContentBuilder() {
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          {item.type === 'video' ? (
-                            <Video className="h-4 w-4" />
-                          ) : (
-                            <FileText className="h-4 w-4" />
-                          )}
+                          {getItemIcon(item.type)}
                           <span className="font-medium">{item.title}</span>
                         </div>
                         {item.description && (

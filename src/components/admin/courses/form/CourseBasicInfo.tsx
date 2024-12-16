@@ -9,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
 import { ImageUpload } from "./ImageUpload";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -76,7 +75,7 @@ export function CourseBasicInfo({ formData, setFormData, isEditing }: CourseBasi
       </div>
 
       <div>
-        <Label>Thumbnail</Label>
+        <Label>Course Thumbnail</Label>
         <ImageUpload
           value={formData.thumbnail_url}
           onChange={handleThumbnailUpload}
@@ -120,7 +119,7 @@ export function CourseBasicInfo({ formData, setFormData, isEditing }: CourseBasi
             setFormData({ ...formData, is_published: checked })
           }
         />
-        <Label htmlFor="is_published">Published</Label>
+        <Label htmlFor="is_published">Make this course public</Label>
       </div>
     </div>
   );

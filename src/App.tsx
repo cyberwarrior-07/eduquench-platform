@@ -20,6 +20,8 @@ import { Toaster } from "sonner";
 import { SidebarProvider, Sidebar, SidebarContent, SidebarInset } from "@/components/ui/sidebar";
 import { StudentSidebar } from "@/components/StudentSidebar";
 import { Header } from "@/components/Header";
+import CMSPageList from "./pages/admin/cms/CMSPageList";
+import CMSPageForm from "./pages/admin/cms/CMSPageForm";
 
 // Create a StudentLayout component for consistent header and sidebar across student pages
 const StudentLayout = () => {
@@ -82,6 +84,9 @@ function App() {
             <Route path="courses" element={<CourseList />} />
             <Route path="courses/new" element={<CourseForm />} />
             <Route path="courses/:id" element={<CourseForm />} />
+            <Route path="pages" element={<CMSPageList />} />
+            <Route path="pages/new" element={<CMSPageForm />} />
+            <Route path="pages/:id" element={<CMSPageForm />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

@@ -1,47 +1,68 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { VideoPlayerWithTranscript } from '@/components/VideoPlayerWithTranscript';
 import { CourseSidebar } from '@/components/CourseSidebar';
 import { Button } from '@/components/ui/button';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle, Menu } from 'lucide-react';
+import { useParams } from 'react-router-dom';
+import { mockCourses } from './Courses';
 
 const mockModules = [
   {
     id: '1',
-    title: 'Introduction to Databases',
+    title: 'Introduction to the Course',
     duration: '1 hour, 30 mins',
     lessons: [
       {
         id: '1-1',
-        title: 'Introduction to Databases Part - 1',
-        duration: '30 mins',
+        title: 'Welcome to the Course',
+        duration: '10 mins',
         type: 'video' as const,
         isCompleted: true,
       },
       {
         id: '1-2',
-        title: 'Introduction to Databases Part - 2',
-        duration: '30 mins',
+        title: 'Course Overview',
+        duration: '15 mins',
         type: 'video' as const,
+        isCompleted: true,
       },
       {
         id: '1-3',
-        title: 'Introduction to Databases Cheat Sheet',
+        title: 'Getting Started Guide',
         duration: '10 mins',
         type: 'reading' as const,
-      },
-      {
-        id: '1-4',
-        title: 'MCQ Practice',
-        duration: '15 mins',
-        type: 'quiz' as const,
+        isCompleted: false,
       },
     ],
   },
-  // Add more modules as needed
+  {
+    id: '2',
+    title: 'Core Concepts',
+    duration: '2 hours',
+    lessons: [
+      {
+        id: '2-1',
+        title: 'Understanding the Basics',
+        duration: '20 mins',
+        type: 'video' as const,
+        isCompleted: false,
+      },
+      {
+        id: '2-2',
+        title: 'Advanced Topics',
+        duration: '25 mins',
+        type: 'video' as const,
+        isCompleted: false,
+      },
+    ],
+  },
 ];
 
 export default function CourseContent() {
-  const [selectedLesson, setSelectedLesson] = React.useState(mockModules[0].lessons[0]);
+  const [selectedLesson, setSelectedLesson] = useState(mockModules[0].lessons[0]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { id } = useParams();
+  const course = mockCourses.find((c) => c.id === id);
 
   const handleSelectLesson = (moduleId: string, lessonId: string) => {
     const module = mockModules.find((m) => m.id === moduleId);
@@ -51,39 +72,67 @@ export default function CourseContent() {
     }
   };
 
-  return (
-    <div className="flex h-[calc(100vh-4rem)]">
-      <div className="flex-1 p-6 overflow-y-auto">
-        <div className="max-w-5xl mx-auto space-y-6">
-          <VideoPlayerWithTranscript
-            videoUrl="/path-to-video.mp4"
-            title={selectedLesson.title}
-            instructor="John Doe"
-          />
-          
-          <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-2xl font-bold">Course Content</h2>
-              <p className="text-gray-500">Master the fundamentals of database management</p>
-            </div>
-            <Button variant="outline" className="gap-2">
-              <MessageCircle className="h-4 w-4" />
-              Ask doubt
-            </Button>
-          </div>
+  if (!course) {
+    return <div>Course not found</div>;
+  }
 
-          <div className="prose max-w-none">
-            <h3>About this lesson</h3>
-            <p>
-              In this comprehensive lesson, we'll dive deep into the fundamentals of
-              database management systems. You'll learn about the core concepts,
-              different types of databases, and how to effectively work with them.
-            </p>
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="flex">
+        {/* Main content */}
+        <div className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'mr-80' : ''}`}>
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-6">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                className="hover:bg-muted"
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+              <Button variant="outline" className="gap-2">
+                <MessageCircle className="h-4 w-4" />
+                Ask doubt
+              </Button>
+            </div>
+
+            <div className="max-w-5xl mx-auto space-y-6">
+              <VideoPlayerWithTranscript
+                videoUrl="/path-to-video.mp4"
+                title={selectedLesson.title}
+                instructor={course.instructor}
+              />
+              
+              <div className="prose max-w-none">
+                <h2 className="text-2xl font-bold mb-2">{course.title}</h2>
+                <p className="text-muted-foreground">{course.description}</p>
+              </div>
+
+              <div className="prose max-w-none">
+                <h3 className="text-xl font-semibold mb-2">About this lesson</h3>
+                <p className="text-muted-foreground">
+                  This lesson covers the fundamental concepts and provides a comprehensive
+                  introduction to the topic. Follow along with the video and make sure to
+                  complete the exercises at the end.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="w-80">
-        <CourseSidebar modules={mockModules} onSelectLesson={handleSelectLesson} />
+
+        {/* Sidebar */}
+        <div
+          className={`fixed right-0 top-0 h-screen w-80 transition-transform duration-300 transform ${
+            isSidebarOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
+        >
+          <CourseSidebar
+            modules={mockModules}
+            onSelectLesson={handleSelectLesson}
+            className="border-l border-border"
+          />
+        </div>
       </div>
     </div>
   );

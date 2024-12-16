@@ -42,7 +42,10 @@ export default function StudentDashboard() {
       console.log('Fetching upcoming live sessions...');
       const { data, error } = await supabase
         .from('live_sessions')
-        .select('*')
+        .select(`
+          *,
+          courses(title)
+        `)
         .gte('start_time', new Date().toISOString())
         .order('start_time')
         .limit(5);

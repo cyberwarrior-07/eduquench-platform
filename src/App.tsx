@@ -19,22 +19,36 @@ import { supabase } from "./integrations/supabase/client";
 import { Toaster } from "sonner";
 import { SidebarProvider, Sidebar, SidebarContent, SidebarInset } from "@/components/ui/sidebar";
 import { StudentSidebar } from "@/components/StudentSidebar";
+import { Header } from "@/components/Header";
 
-// Create a StudentLayout component for consistent sidebar across student pages
+// Create a StudentLayout component for consistent header and sidebar across student pages
 const StudentLayout = () => {
   return (
-    <SidebarProvider defaultOpen={true}>
-      <div className="flex min-h-screen w-full">
-        <Sidebar>
-          <SidebarContent>
-            <StudentSidebar />
-          </SidebarContent>
-        </Sidebar>
-        <SidebarInset>
-          <Outlet />
-        </SidebarInset>
-      </div>
-    </SidebarProvider>
+    <div className="min-h-screen bg-background">
+      <Header />
+      <SidebarProvider defaultOpen={true}>
+        <div className="flex min-h-[calc(100vh-3.5rem)] w-full">
+          <Sidebar>
+            <SidebarContent>
+              <StudentSidebar />
+            </SidebarContent>
+          </Sidebar>
+          <SidebarInset>
+            <Outlet />
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
+    </div>
+  );
+};
+
+// Create a PublicLayout component for consistent header on public pages
+const PublicLayout = () => {
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      <Outlet />
+    </div>
   );
 };
 
@@ -43,9 +57,11 @@ function App() {
     <SessionContextProvider supabaseClient={supabase}>
       <Router>
         <Routes>
-          {/* Public routes */}
-          <Route path="/" element={<Index />} />
-          <Route path="/courses" element={<Courses />} />
+          {/* Public routes - wrapped with PublicLayout */}
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<Index />} />
+            <Route path="/courses" element={<Courses />} />
+          </Route>
           
           {/* Student routes - wrapped with StudentLayout */}
           <Route element={<StudentLayout />}>

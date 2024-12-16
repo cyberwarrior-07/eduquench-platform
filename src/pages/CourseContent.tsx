@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { VideoPlayerWithTranscript } from '@/components/VideoPlayerWithTranscript';
+import { VideoPlayer } from '@/components/VideoPlayer';
 import { CourseSidebar } from '@/components/CourseSidebar';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, Menu, Lock } from 'lucide-react';
@@ -68,6 +68,8 @@ export default function CourseContent() {
   const { data: course, isLoading } = useQuery({
     queryKey: ['course', id],
     queryFn: async () => {
+      if (!id) return null;
+      
       const { data, error } = await supabase
         .from('courses')
         .select('*')
@@ -75,15 +77,17 @@ export default function CourseContent() {
         .single();
       
       if (error) {
+        console.error('Error fetching course:', error);
         toast.error('Error fetching course');
         throw error;
       }
       return data;
     },
+    enabled: !!id,
   });
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div className="p-8">Loading...</div>;
   }
 
   if (!course) {
@@ -115,58 +119,56 @@ export default function CourseContent() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="flex">
+    <div className="p-6">
+      <div className="flex items-center justify-between mb-6">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="hover:bg-muted"
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+        <Button variant="outline" className="gap-2">
+          <MessageCircle className="h-4 w-4" />
+          Ask doubt
+        </Button>
+      </div>
+
+      <div className="flex gap-6">
         <div className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'mr-80' : ''}`}>
-          <div className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className="hover:bg-muted"
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
-              <Button variant="outline" className="gap-2">
-                <MessageCircle className="h-4 w-4" />
-                Ask doubt
-              </Button>
+          <div className="max-w-5xl mx-auto space-y-6">
+            <VideoPlayer
+              videoUrl="/path-to-video.mp4"
+              title={selectedLesson.title}
+              instructor={course.mentor_id || 'TBD'}
+            />
+            
+            <div className="prose max-w-none">
+              <h2 className="text-2xl font-bold mb-2">{course.title}</h2>
+              <p className="text-muted-foreground">{course.description}</p>
             </div>
 
-            <div className="max-w-5xl mx-auto space-y-6">
-              <VideoPlayerWithTranscript
-                videoUrl="/path-to-video.mp4"
-                title={selectedLesson.title}
-                instructor={course.mentor_id || 'TBD'}
-              />
-              
-              <div className="prose max-w-none">
-                <h2 className="text-2xl font-bold mb-2">{course.title}</h2>
-                <p className="text-muted-foreground">{course.description}</p>
-              </div>
-
-              <div className="prose max-w-none">
-                <h3 className="text-xl font-semibold mb-2">About this lesson</h3>
-                <p className="text-muted-foreground">
-                  This lesson covers the fundamental concepts and provides a comprehensive
-                  introduction to the topic. Follow along with the video and make sure to
-                  complete the exercises at the end.
-                </p>
-              </div>
+            <div className="prose max-w-none">
+              <h3 className="text-xl font-semibold mb-2">About this lesson</h3>
+              <p className="text-muted-foreground">
+                This lesson covers the fundamental concepts and provides a comprehensive
+                introduction to the topic. Follow along with the video and make sure to
+                complete the exercises at the end.
+              </p>
             </div>
           </div>
         </div>
 
         <div
-          className={`fixed right-0 top-0 h-screen w-80 transition-transform duration-300 transform ${
+          className={`fixed right-0 top-14 h-[calc(100vh-3.5rem)] w-80 transition-transform duration-300 transform ${
             isSidebarOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
           <CourseSidebar
             modules={mockModules}
             onSelectLesson={handleSelectLesson}
-            className="border-l border-border"
+            className="border-l border-border h-full"
           />
         </div>
       </div>

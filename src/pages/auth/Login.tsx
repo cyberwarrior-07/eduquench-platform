@@ -75,10 +75,6 @@ const Login = () => {
             console.log("Redirecting to admin dashboard");
             navigate('/admin');
             break;
-          case 'mentor':
-            console.log("Redirecting to mentor dashboard");
-            navigate('/mentor');
-            break;
           case 'student':
           default:
             console.log("Redirecting to student dashboard");
@@ -157,14 +153,6 @@ const Login = () => {
                 label: {
                   color: 'hsl(var(--foreground))',
                   marginBottom: '0.375rem',
-                },
-              },
-              variables: {
-                default: {
-                  colors: {
-                    brand: 'var(--primary)',
-                    brandAccent: 'var(--primary-600)',
-                  },
                 },
               },
             }}

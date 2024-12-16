@@ -1,9 +1,22 @@
-import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
+import { Clock, CalendarIcon } from "lucide-react";
+
+interface LiveSession {
+  id: string;
+  title: string;
+  description?: string;
+  start_time: string;
+  duration: number;
+  meeting_link?: string;
+  courses?: {
+    title: string;
+  };
+}
 
 const Schedule = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -11,9 +24,13 @@ const Schedule = () => {
   const { data: events, isLoading } = useQuery({
     queryKey: ['schedule-events'],
     queryFn: async () => {
+      console.log('Fetching schedule events...');
       const { data, error } = await supabase
         .from('live_sessions')
-        .select('*, courses(title)')
+        .select(`
+          *,
+          courses(title)
+        `)
         .gte('start_time', new Date().toISOString())
         .order('start_time', { ascending: true });
 
@@ -24,7 +41,7 @@ const Schedule = () => {
       }
 
       console.log('Schedule events fetched:', data);
-      return data;
+      return data as LiveSession[];
     },
   });
 
@@ -35,7 +52,10 @@ const Schedule = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card className="bg-white border border-gray-100 shadow-sm">
           <CardHeader>
-            <CardTitle className="text-gray-900">Calendar</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-gray-900">
+              <CalendarIcon className="h-5 w-5" />
+              Calendar
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <Calendar
@@ -49,7 +69,10 @@ const Schedule = () => {
 
         <Card className="bg-white border border-gray-100 shadow-sm">
           <CardHeader>
-            <CardTitle className="text-gray-900">Upcoming Events</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-gray-900">
+              <Clock className="h-5 w-5" />
+              Upcoming Events
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">

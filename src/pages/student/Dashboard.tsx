@@ -9,6 +9,8 @@ import { DashboardStats } from "@/components/student/DashboardStats";
 import { LiveSessionsList } from "@/components/student/LiveSessionsList";
 import { EnrolledCourses } from "@/components/student/EnrolledCourses";
 import { Slider } from "@/components/ui/slider";
+import { StudentSidebar } from "@/components/StudentSidebar";
+import { SidebarProvider, Sidebar, SidebarContent, SidebarInset } from "@/components/ui/sidebar";
 
 export default function StudentDashboard() {
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -72,48 +74,59 @@ export default function StudentDashboard() {
   }
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
-      <h1 className="text-3xl font-bold">Student Dashboard</h1>
+    <SidebarProvider defaultOpen={true}>
+      <div className="flex min-h-screen w-full">
+        <Sidebar>
+          <SidebarContent>
+            <StudentSidebar />
+          </SidebarContent>
+        </Sidebar>
+        <SidebarInset>
+          <div className="container mx-auto py-8 space-y-6">
+            <h1 className="text-3xl font-bold">Student Dashboard</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <DashboardStats courses={courses || []} />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <DashboardStats courses={courses || []} />
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CalendarIcon className="h-5 w-5" />
-              Calendar
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              className="rounded-md border"
-            />
-          </CardContent>
-        </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CalendarIcon className="h-5 w-5" />
+                    Calendar
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    className="rounded-md border"
+                  />
+                </CardContent>
+              </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Overall Progress</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Slider
-              defaultValue={sliderValue}
-              max={100}
-              step={1}
-              onValueChange={setSliderValue}
-              className="w-full"
-            />
-            <p className="text-center mt-2">{sliderValue}%</p>
-          </CardContent>
-        </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Overall Progress</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Slider
+                    defaultValue={sliderValue}
+                    max={100}
+                    step={1}
+                    onValueChange={setSliderValue}
+                    className="w-full"
+                  />
+                  <p className="text-center mt-2">{sliderValue}%</p>
+                </CardContent>
+              </Card>
 
-        <LiveSessionsList sessions={upcomingLiveSessions || []} />
-        <EnrolledCourses courses={courses || []} />
+              <LiveSessionsList sessions={upcomingLiveSessions || []} />
+              <EnrolledCourses courses={courses || []} />
+            </div>
+          </div>
+        </SidebarInset>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }

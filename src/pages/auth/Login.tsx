@@ -27,9 +27,9 @@ const Login = () => {
 
     checkSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('Auth state changed:', event);
-      if (event === 'SIGNED_IN' && session) {
+      if (session) {
         handleUserSession(session);
       }
     });
@@ -39,11 +39,13 @@ const Login = () => {
 
   const handleUserSession = async (session: any) => {
     try {
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', session.user.id)
         .single();
+
+      if (error) throw error;
 
       if (profile) {
         switch (profile.role) {

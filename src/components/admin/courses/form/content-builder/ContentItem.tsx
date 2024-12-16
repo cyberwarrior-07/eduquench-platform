@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { GripVertical, Video, FileText, Folder, Trash2, Video2 } from "lucide-react";
+import { GripVertical, Video, FileText, Folder, Trash2 } from "lucide-react";
 import { ContentType } from "../content-types/types";
 
 interface ContentItemProps {
@@ -22,7 +22,7 @@ export function ContentItem({ id, type, title, description, onRemove, dragHandle
       case 'chapter':
         return <Folder className="h-4 w-4" />;
       case 'live-class':
-        return <Video2 className="h-4 w-4" />;
+        return <Video className="h-4 w-4 text-blue-500" />; // Using Video icon with different color for live classes
       default:
         return null;
     }

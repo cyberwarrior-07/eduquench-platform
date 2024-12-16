@@ -2,10 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Calendar } from "@/components/ui/calendar";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
 import { DashboardStats } from "@/components/student/DashboardStats";
 import { LiveSessionsList } from "@/components/student/LiveSessionsList";
 import { EnrolledCourses } from "@/components/student/EnrolledCourses";
@@ -14,24 +13,6 @@ import { Slider } from "@/components/ui/slider";
 export default function StudentDashboard() {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [sliderValue, setSliderValue] = useState([50]);
-  const navigate = useNavigate();
-
-  // Check authentication
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        navigate('/login');
-      }
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
-        navigate('/login');
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
 
   const { data: courses, isLoading: coursesLoading } = useQuery({
     queryKey: ['student-courses'],
@@ -97,7 +78,6 @@ export default function StudentDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <DashboardStats courses={courses || []} />
 
-        {/* Calendar */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -115,7 +95,6 @@ export default function StudentDashboard() {
           </CardContent>
         </Card>
 
-        {/* Progress Slider */}
         <Card>
           <CardHeader>
             <CardTitle>Overall Progress</CardTitle>

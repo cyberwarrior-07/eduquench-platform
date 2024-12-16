@@ -7,99 +7,78 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Course } from "@/types/course";
-
-// Temporary mock data - will be replaced with API calls
-export const mockCourses: Course[] = [
-  {
-    id: "1",
-    title: "Introduction to Web Development",
-    description: "Learn the basics of HTML, CSS, and JavaScript",
-    thumbnail: "https://source.unsplash.com/random/800x600?web",
-    instructor: "John Doe",
-    duration: "8 weeks",
-    lessons: 24,
-    progress: 0,
-    isLocked: false,
-    requirements: ["Basic computer knowledge", "No prior coding experience needed"],
-    objectives: [
-      "Understand HTML structure",
-      "Style with CSS",
-      "JavaScript basics",
-      "Build simple websites"
-    ],
-    level: "Beginner",
-    category: "Web Development",
-    enrollmentStatus: "Open"
-  },
-  {
-    id: "2",
-    title: "Advanced React Patterns",
-    description: "Master advanced React concepts and patterns",
-    thumbnail: "https://source.unsplash.com/random/800x600?coding",
-    instructor: "Jane Smith",
-    duration: "6 weeks",
-    lessons: 18,
-    isLocked: true,
-    requirements: ["JavaScript proficiency", "Basic React knowledge"],
-    objectives: [
-      "Advanced hooks",
-      "Component patterns",
-      "State management",
-      "Performance optimization"
-    ],
-    level: "Advanced",
-    category: "Frontend Development",
-    enrollmentStatus: "Closed"
-  },
-  {
-    id: "3",
-    title: "Data Structures and Algorithms",
-    description: "Essential computer science concepts for developers",
-    thumbnail: "https://source.unsplash.com/random/800x600?algorithm",
-    instructor: "Mike Johnson",
-    duration: "10 weeks",
-    lessons: 30,
-    progress: 60,
-    isLocked: false,
-    requirements: ["Basic programming knowledge", "Problem-solving skills"],
-    objectives: [
-      "Understand basic data structures",
-      "Algorithm analysis",
-      "Sorting and searching",
-      "Graph algorithms"
-    ],
-    level: "Intermediate",
-    category: "Computer Science",
-    enrollmentStatus: "In Progress"
-  }
-];
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const Courses = () => {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
-  const filteredCourses = mockCourses.filter(course =>
+  useEffect(() => {
+    // Check authentication status
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        navigate('/login');
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        navigate('/login');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  const { data: courses, isLoading } = useQuery({
+    queryKey: ['courses'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('courses')
+        .select('*')
+        .eq('is_published', true);
+      
+      if (error) {
+        toast.error('Error fetching courses');
+        throw error;
+      }
+      return data || [];
+    },
+  });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  const filteredCourses = courses.filter(course =>
     selectedCategory === "all" ? true : course.category === selectedCategory
   );
 
   return (
     <div className="container mx-auto py-8">
-      <Select onValueChange={setSelectedCategory} defaultValue="all">
-        <SelectTrigger>
-          <SelectValue placeholder="Select a category" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectItem value="all">All Categories</SelectItem>
-            <SelectItem value="Web Development">Web Development</SelectItem>
-            <SelectItem value="Frontend Development">Frontend Development</SelectItem>
-            <SelectItem value="Computer Science">Computer Science</SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Available Courses</h1>
+        <Select onValueChange={setSelectedCategory} defaultValue="all">
+          <SelectTrigger className="w-[200px]">
+            <SelectValue placeholder="Select a category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="all">All Categories</SelectItem>
+              <SelectItem value="Web Development">Web Development</SelectItem>
+              <SelectItem value="Frontend Development">Frontend Development</SelectItem>
+              <SelectItem value="Computer Science">Computer Science</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredCourses.map(course => (
           <CourseCard key={course.id} course={course} />
         ))}

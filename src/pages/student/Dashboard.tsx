@@ -1,16 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
-import { Progress } from "@/components/ui/progress";
 import { Calendar } from "@/components/ui/calendar";
 import { useState, useEffect } from "react";
-import { CourseCard } from "@/components/CourseCard";
-import { Clock, BookOpen, Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { DashboardStats } from "@/components/student/DashboardStats";
+import { LiveSessionsList } from "@/components/student/LiveSessionsList";
+import { EnrolledCourses } from "@/components/student/EnrolledCourses";
+import { Slider } from "@/components/ui/slider";
 
 export default function StudentDashboard() {
   const [date, setDate] = useState<Date | undefined>(new Date());
+  const [sliderValue, setSliderValue] = useState([50]);
   const navigate = useNavigate();
 
   // Check authentication
@@ -92,30 +95,7 @@ export default function StudentDashboard() {
       <h1 className="text-3xl font-bold">Student Dashboard</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Course Progress Overview */}
-        <Card className="col-span-full md:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5" />
-              Course Progress
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {courses?.map((course) => (
-                <div key={course.id} className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium truncate">{course.title}</span>
-                    <span className="text-sm text-muted-foreground">
-                      {course.student_progress?.[0]?.progress || 0}%
-                    </span>
-                  </div>
-                  <Progress value={course.student_progress?.[0]?.progress || 0} />
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <DashboardStats courses={courses || []} />
 
         {/* Calendar */}
         <Card>
@@ -135,83 +115,25 @@ export default function StudentDashboard() {
           </CardContent>
         </Card>
 
-        {/* Upcoming Live Sessions */}
-        <Card className="col-span-full">
+        {/* Progress Slider */}
+        <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              Upcoming Live Sessions
-            </CardTitle>
+            <CardTitle>Overall Progress</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {upcomingLiveSessions?.length === 0 ? (
-                <p className="text-muted-foreground text-center py-4">
-                  No upcoming live sessions scheduled
-                </p>
-              ) : (
-                upcomingLiveSessions?.map((session) => (
-                  <div
-                    key={session.id}
-                    className="flex items-center justify-between p-4 rounded-lg border"
-                  >
-                    <div>
-                      <h3 className="font-medium">{session.title}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(session.start_time).toLocaleString()}
-                      </p>
-                    </div>
-                    {session.meeting_link && (
-                      <a
-                        href={session.meeting_link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary hover:underline"
-                      >
-                        Join Meeting
-                      </a>
-                    )}
-                  </div>
-                ))
-              )}
-            </div>
+            <Slider
+              defaultValue={sliderValue}
+              max={100}
+              step={1}
+              onValueChange={setSliderValue}
+              className="w-full"
+            />
+            <p className="text-center mt-2">{sliderValue}%</p>
           </CardContent>
         </Card>
 
-        {/* Enrolled Courses */}
-        <Card className="col-span-full">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5" />
-              My Courses
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {courses?.map((course) => (
-                <CourseCard
-                  key={course.id}
-                  course={{
-                    id: course.id,
-                    title: course.title,
-                    description: course.description || '',
-                    thumbnail: course.thumbnail_url || '/placeholder.svg',
-                    duration: '2 hours',
-                    lessons: 12,
-                    level: 'Beginner',
-                    enrollmentStatus: 'Open',
-                    progress: course.student_progress?.[0]?.progress || 0,
-                    isLocked: false,
-                    objectives: [],
-                    requirements: [],
-                    instructor: 'John Doe',
-                    category: 'Development',
-                  }}
-                />
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <LiveSessionsList sessions={upcomingLiveSessions || []} />
+        <EnrolledCourses courses={courses || []} />
       </div>
     </div>
   );

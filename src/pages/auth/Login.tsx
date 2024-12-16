@@ -32,12 +32,12 @@ const Login = () => {
       }
 
       // Handle auth errors
-      if (event === 'USER_DELETED' || event === 'PASSWORD_RECOVERY') {
-        console.error('Auth event error:', event);
+      if (event === 'PASSWORD_RECOVERY_EMAIL_SENT' || event === 'USER_UPDATED') {
+        console.error('Auth event:', event);
         toast({
           variant: "destructive",
-          title: "Authentication Error",
-          description: `Error during authentication: ${event}`,
+          title: "Authentication Status",
+          description: `Authentication status: ${event}`,
         });
       }
 

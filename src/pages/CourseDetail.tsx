@@ -17,17 +17,20 @@ export default function CourseDetail() {
         .from('courses')
         .select(`
           *,
-          profiles:mentor_id (
-            username
+          mentor:mentor_id (
+            username,
+            avatar_url
           )
         `)
         .eq('id', id)
         .single();
       
       if (error) {
+        console.error('Error fetching course:', error);
         toast.error('Error fetching course');
         throw error;
       }
+      
       return {
         ...data,
         duration: '10 weeks', // Default value
@@ -129,12 +132,12 @@ export default function CourseDetail() {
           <div className="border rounded-lg p-6 space-y-6">
             <div className="flex items-center gap-4">
               <img
-                src={`https://api.dicebear.com/7.x/initials/svg?seed=${course.profiles?.username || 'Instructor'}`}
-                alt={course.profiles?.username || 'Instructor'}
+                src={`https://api.dicebear.com/7.x/initials/svg?seed=${course.mentor?.username || 'Instructor'}`}
+                alt={course.mentor?.username || 'Instructor'}
                 className="w-12 h-12 rounded-full"
               />
               <div>
-                <p className="font-semibold">{course.profiles?.username || 'Instructor'}</p>
+                <p className="font-semibold">{course.mentor?.username || 'Instructor'}</p>
                 <p className="text-sm text-gray-600">Course Instructor</p>
               </div>
             </div>

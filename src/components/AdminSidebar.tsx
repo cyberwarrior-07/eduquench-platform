@@ -7,12 +7,11 @@ import {
   Users,
   Settings,
   Database,
-  ChevronLeft,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { useState } from "react";
 import { ScrollArea } from "./ui/scroll-area";
+import { useSidebarContext } from "./ui/sidebar";
 
 const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
@@ -24,36 +23,15 @@ const navigation = [
 
 export function AdminSidebar() {
   const location = useLocation();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { collapsed } = useSidebarContext();
 
   return (
-    <div
-      className={cn(
-        "relative flex flex-col h-full border-r bg-background",
-        isCollapsed ? "w-16" : "w-64"
-      )}
-    >
-      <div className="absolute inset-y-0 right-0 flex items-center">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="-right-4 z-10 rounded-full border shadow-md bg-background"
-          onClick={() => setIsCollapsed(!isCollapsed)}
-        >
-          <ChevronLeft
-            className={cn(
-              "h-4 w-4 transition-all",
-              isCollapsed ? "rotate-180" : "rotate-0"
-            )}
-          />
-        </Button>
-      </div>
-
+    <div className="flex flex-col h-full">
       <div className="p-4">
         <Link to="/admin" className="flex items-center gap-2">
           <span className={cn(
             "text-xl font-bold text-primary transition-all",
-            isCollapsed ? "hidden" : "block"
+            collapsed ? "hidden" : "block"
           )}>
             ADMIN CMS
           </span>
@@ -62,13 +40,13 @@ export function AdminSidebar() {
 
       <div className={cn(
         "flex items-center gap-3 mx-4 rounded-lg border bg-gray-50 p-3",
-        isCollapsed ? "justify-center" : ""
+        collapsed ? "justify-center" : ""
       )}>
         <Avatar>
           <AvatarImage src="/placeholder.svg" />
           <AvatarFallback>AD</AvatarFallback>
         </Avatar>
-        {!isCollapsed && (
+        {!collapsed && (
           <div className="flex flex-col">
             <span className="font-medium text-gray-900">Admin</span>
             <span className="text-sm text-gray-500">Administrator</span>
@@ -90,7 +68,7 @@ export function AdminSidebar() {
               )}
             >
               <item.icon className="h-4 w-4" />
-              {!isCollapsed && <span>{item.name}</span>}
+              {!collapsed && <span>{item.name}</span>}
             </Link>
           ))}
         </div>
@@ -101,11 +79,11 @@ export function AdminSidebar() {
           variant="ghost"
           className={cn(
             "w-full justify-start gap-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900",
-            isCollapsed && "justify-center"
+            collapsed && "justify-center"
           )}
         >
           <Settings className="h-4 w-4" />
-          {!isCollapsed && "Settings"}
+          {!collapsed && "Settings"}
         </Button>
       </div>
     </div>

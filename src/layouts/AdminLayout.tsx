@@ -17,7 +17,7 @@ export function AdminLayout() {
               </SidebarContent>
             </Sidebar>
             <SidebarInset className="flex-1 transition-all duration-300 p-4 md:p-6 w-full overflow-x-hidden bg-white">
-              <div className="container mx-auto max-w-7xl">
+              <div className="container mx-auto max-w-7xl space-y-8">
                 <Outlet />
               </div>
             </SidebarInset>

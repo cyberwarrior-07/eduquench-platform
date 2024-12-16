@@ -14,6 +14,28 @@ export default function StudentDashboard() {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [sliderValue, setSliderValue] = useState([50]);
 
+  const { data: profile } = useQuery({
+    queryKey: ['user-profile'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user found');
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching profile:', error);
+        toast.error('Failed to load profile');
+        throw error;
+      }
+
+      return data;
+    },
+  });
+
   const { data: courses, isLoading: coursesLoading } = useQuery({
     queryKey: ['student-courses'],
     queryFn: async () => {
@@ -60,7 +82,7 @@ export default function StudentDashboard() {
     },
   });
 
-  if (coursesLoading || sessionsLoading) {
+  if (coursesLoading) {
     return (
       <div className="container mx-auto py-8">
         <div className="animate-pulse space-y-4">
@@ -75,8 +97,12 @@ export default function StudentDashboard() {
   }
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
-      <h1 className="text-3xl font-bold">Student Dashboard</h1>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">
+          Hello, {profile?.username || 'Student'}! 👋
+        </h1>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <DashboardStats courses={courses || []} />

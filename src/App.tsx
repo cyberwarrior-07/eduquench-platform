@@ -1,104 +1,98 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router-dom";
-import { AdminLayout } from "./components/AdminLayout";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import APISettings from "./pages/admin/APISettings";
-import CourseList from "./pages/admin/courses/CourseList";
-import CourseForm from "./pages/admin/courses/CourseForm";
-import Index from "./pages/Index";
-import Courses from "./pages/Courses";
-import StudentDashboard from "./pages/student/Dashboard";
-import Assignments from "./pages/Assignments";
-import CourseContent from "./pages/CourseContent";
-import Discussions from "./pages/Discussions";
-import Resources from "./pages/Resources";
-import Schedule from "./pages/Schedule";
-import Quizzes from "./pages/Quizzes";
-import LiveSessions from "./pages/student/LiveSessions";
-import Login from "./pages/auth/Login";
-import { SessionContextProvider } from '@supabase/auth-helpers-react';
-import { supabase } from "./integrations/supabase/client";
-import { Toaster } from "sonner";
-import { SidebarProvider, Sidebar, SidebarContent, SidebarInset } from "@/components/ui/sidebar";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "@/components/ui/sonner";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Sidebar, SidebarContent, SidebarInset } from "@/components/ui/sidebar";
 import { StudentSidebar } from "@/components/StudentSidebar";
+import { AdminSidebar } from "@/components/AdminSidebar";
 import { Header } from "@/components/Header";
-import CMSPageList from "./pages/admin/cms/CMSPageList";
-import CMSPageForm from "./pages/admin/cms/CMSPageForm";
+import { Footer } from "@/components/Footer";
+import { Outlet } from "react-router-dom";
 
-// Create a StudentLayout component for consistent header and sidebar across student pages
-const StudentLayout = () => {
+// Pages
+import Index from "@/pages/Index";
+import Login from "@/pages/auth/Login";
+import CMSLogin from "@/pages/auth/CMSLogin";
+import StudentDashboard from "@/pages/student/Dashboard";
+import Settings from "@/pages/student/Settings";
+import Courses from "@/pages/Courses";
+import CourseContent from "@/pages/CourseContent";
+import CourseDetail from "@/pages/CourseDetail";
+import LiveSessions from "@/pages/student/LiveSessions";
+import AdminDashboard from "@/pages/admin/Dashboard";
+import AdminCourses from "@/pages/admin/Courses";
+import AdminUsers from "@/pages/admin/Users";
+import AdminSettings from "@/pages/admin/Settings";
+import AdminAnalytics from "@/pages/admin/Analytics";
+
+const queryClient = new QueryClient();
+
+function StudentLayout() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen flex flex-col">
       <Header />
-      <SidebarProvider defaultOpen={true}>
-        <div className="flex min-h-[calc(100vh-3.5rem)] w-full">
-          <Sidebar>
-            <SidebarContent>
-              <StudentSidebar />
-            </SidebarContent>
-          </Sidebar>
-          <SidebarInset className="flex-1 p-6">
-            <Outlet />
-          </SidebarInset>
-        </div>
-      </SidebarProvider>
+      <div className="flex-1 flex">
+        <Sidebar>
+          <SidebarContent>
+            <StudentSidebar />
+          </SidebarContent>
+        </Sidebar>
+        <SidebarInset className="flex-1 p-6">
+          <Outlet />
+        </SidebarInset>
+      </div>
+      <Footer />
     </div>
-  );
-};
-
-// Create a PublicLayout component for consistent header on public pages
-const PublicLayout = () => {
-  return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <Outlet />
-    </div>
-  );
-};
-
-function App() {
-  return (
-    <SessionContextProvider supabaseClient={supabase}>
-      <Router>
-        <Routes>
-          {/* Public routes - wrapped with PublicLayout */}
-          <Route element={<PublicLayout />}>
-            <Route path="/" element={<Index />} />
-          </Route>
-          
-          {/* Auth routes */}
-          <Route path="/login" element={<Login />} />
-          
-          {/* Student routes - wrapped with StudentLayout */}
-          <Route element={<StudentLayout />}>
-            <Route path="/dashboard" element={<StudentDashboard />} />
-            <Route path="/courses" element={<Courses />} />
-            <Route path="/assignments" element={<Assignments />} />
-            <Route path="/course-content" element={<CourseContent />} />
-            <Route path="/discussions" element={<Discussions />} />
-            <Route path="/resources" element={<Resources />} />
-            <Route path="/schedule" element={<Schedule />} />
-            <Route path="/quizzes" element={<Quizzes />} />
-            <Route path="/live-sessions" element={<LiveSessions />} />
-          </Route>
-          
-          {/* Admin routes */}
-          <Route path="/admin" element={<AdminLayout><Outlet /></AdminLayout>}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="settings" element={<APISettings />} />
-            <Route path="courses" element={<CourseList />} />
-            <Route path="courses/new" element={<CourseForm />} />
-            <Route path="courses/:id" element={<CourseForm />} />
-            <Route path="pages" element={<CMSPageList />} />
-            <Route path="pages/new" element={<CMSPageForm />} />
-            <Route path="pages/:id" element={<CMSPageForm />} />
-          </Route>
-
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-        <Toaster position="top-right" />
-      </Router>
-    </SessionContextProvider>
   );
 }
 
-export default App;
+function AdminLayout() {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <div className="flex-1 flex">
+        <Sidebar>
+          <SidebarContent>
+            <AdminSidebar />
+          </SidebarContent>
+        </Sidebar>
+        <SidebarInset className="flex-1 p-6">
+          <Outlet />
+        </SidebarInset>
+      </div>
+      <Footer />
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/cms/login" element={<CMSLogin />} />
+          
+          <Route element={<StudentLayout />}>
+            <Route path="/dashboard" element={<StudentDashboard />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/courses" element={<Courses />} />
+            <Route path="/courses/:id" element={<CourseDetail />} />
+            <Route path="/courses/:id/content" element={<CourseContent />} />
+            <Route path="/live-sessions" element={<LiveSessions />} />
+          </Route>
+
+          <Route element={<AdminLayout />}>
+            <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/courses" element={<AdminCourses />} />
+            <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/settings" element={<AdminSettings />} />
+            <Route path="/admin/analytics" element={<AdminAnalytics />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+      <Toaster />
+    </QueryClientProvider>
+  );
+}

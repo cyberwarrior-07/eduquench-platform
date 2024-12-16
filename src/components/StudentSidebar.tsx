@@ -1,24 +1,18 @@
-import { cn } from "@/lib/utils";
-import { Button } from "./ui/button";
-import { ScrollArea } from "./ui/scroll-area";
-import {
-  BookOpen,
-  Calendar,
-  ChevronLeft,
-  GraduationCap,
-  LayoutDashboard,
-  Library,
-  MessageSquare,
-  PenBox,
-} from "lucide-react";
 import { NavLink } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
+import {
+  LayoutDashboard,
+  GraduationCap,
+  CalendarDays,
+  BookOpen,
+  Settings,
+  ChevronLeft,
+} from "lucide-react";
 import { useState } from "react";
 
-interface StudentSidebarProps {
-  className?: string;
-}
-
-export const StudentSidebar = ({ className }: StudentSidebarProps) => {
+export function StudentSidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const links = [
@@ -39,32 +33,21 @@ export const StudentSidebar = ({ className }: StudentSidebarProps) => {
     },
     {
       title: "Schedule",
-      icon: Calendar,
+      icon: CalendarDays,
       href: "/schedule",
     },
     {
-      title: "Resources",
-      icon: Library,
-      href: "/resources",
-    },
-    {
-      title: "Assignments",
-      icon: PenBox,
-      href: "/assignments",
-    },
-    {
-      title: "Discussions",
-      icon: MessageSquare,
-      href: "/discussions",
+      title: "Settings",
+      icon: Settings,
+      href: "/settings",
     },
   ];
 
   return (
     <div
       className={cn(
-        "relative flex flex-col h-full border-r bg-background transition-all duration-300",
-        isCollapsed ? "w-[60px]" : "w-[240px]",
-        className
+        "relative flex flex-col h-full border-r bg-background",
+        isCollapsed ? "w-16" : "w-64"
       )}
     >
       <div className="absolute inset-y-0 right-0 flex items-center">
@@ -90,9 +73,10 @@ export const StudentSidebar = ({ className }: StudentSidebarProps) => {
               to={link.href}
               className={({ isActive }) =>
                 cn(
-                  "flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-all hover:bg-accent hover:text-accent-foreground",
-                  isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground",
-                  isCollapsed && "justify-center"
+                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
+                  isActive
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )
               }
             >
@@ -104,4 +88,4 @@ export const StudentSidebar = ({ className }: StudentSidebarProps) => {
       </ScrollArea>
     </div>
   );
-};
+}

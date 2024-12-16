@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { TextToSpeechClient } from "https://esm.sh/@google-cloud/speech@6.0.2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,54 +11,52 @@ serve(async (req) => {
   }
 
   try {
-    const { videoUrl, targetLanguage = 'en' } = await req.json();
+    const { videoUrl, targetLanguage = 'en-US' } = await req.json();
     const GOOGLE_CLOUD_API_KEY = Deno.env.get('GOOGLE_CLOUD_API_KEY');
 
     if (!GOOGLE_CLOUD_API_KEY) {
       throw new Error('Google Cloud API key not configured');
     }
 
-    // Initialize the client
-    const client = new TextToSpeechClient({ 
-      credentials: { client_email: '', private_key: '' },
-      projectId: '',
-      apiEndpoint: 'speech.googleapis.com',
-      apiKey: GOOGLE_CLOUD_API_KEY
-    });
-
-    // Configure the recognition settings
-    const config = {
-      encoding: 'LINEAR16',
-      sampleRateHertz: 16000,
-      languageCode: targetLanguage,
-      enableWordTimeOffsets: true,
-    };
-
-    // Create the recognition request
-    const audio = {
-      uri: videoUrl,
-    };
-
-    const request = {
-      config,
-      audio,
-    };
-
     console.log('Starting transcription for video:', videoUrl);
-    
-    // Perform the transcription
-    const [operation] = await client.longRunningRecognize(request);
-    const [response] = await operation.promise();
 
-    // Process the response
-    const transcription = response.results
-      .map(result => ({
-        text: result.alternatives[0].words.map(word => word.word).join(' '),
-        start: result.alternatives[0].words[0].startTime.seconds,
-        end: result.alternatives[0].words[result.alternatives[0].words.length - 1].endTime.seconds
-      }));
+    // Create a speech recognition request
+    const requestBody = {
+      config: {
+        encoding: 'LINEAR16',
+        sampleRateHertz: 16000,
+        languageCode: targetLanguage,
+        enableWordTimeOffsets: true,
+      },
+      audio: {
+        uri: videoUrl,
+      },
+    };
 
+    // Call the Speech-to-Text API
+    const response = await fetch(
+      `https://speech.googleapis.com/v1/speech:recognize?key=${GOOGLE_CLOUD_API_KEY}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Speech-to-Text API error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
     console.log('Transcription completed successfully');
+
+    // Process and format the response
+    const transcription = data.results.map((result: any) => ({
+      text: result.alternatives[0].transcript,
+      words: result.alternatives[0].words || [],
+    }));
 
     return new Response(JSON.stringify({ transcription }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

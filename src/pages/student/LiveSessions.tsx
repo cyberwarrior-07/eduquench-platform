@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Video, Calendar } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function LiveSessions() {
   const { data: sessions, isLoading } = useQuery({
@@ -61,14 +62,14 @@ export default function LiveSessions() {
                   </p>
                 </div>
                 {session.meeting_link && (
-                  <Button 
-                    as="a"
+                  <a
                     href={session.meeting_link}
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="inline-block"
                   >
-                    Join Session
-                  </Button>
+                    <Button>Join Session</Button>
+                  </a>
                 )}
               </div>
             </CardContent>

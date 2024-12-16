@@ -1,10 +1,11 @@
 import { Course } from "@/types/course";
-import { Lock, Clock, BookOpen, BarChart } from "lucide-react";
+import { Lock, Clock, BookOpen } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface CourseCardProps {
   course: Course;
@@ -12,6 +13,14 @@ interface CourseCardProps {
 
 export const CourseCard = ({ course }: CourseCardProps) => {
   const navigate = useNavigate();
+
+  const handleCourseAccess = () => {
+    if (course.isLocked) {
+      toast.error("Please complete the prerequisites to unlock this course.");
+      return;
+    }
+    navigate(`/course/${course.id}`);
+  };
 
   return (
     <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg">
@@ -69,7 +78,7 @@ export const CourseCard = ({ course }: CourseCardProps) => {
       </CardContent>
       <CardFooter className="p-4 pt-0">
         <Button
-          onClick={() => navigate(`/course/${course.id}`)}
+          onClick={handleCourseAccess}
           className="w-full"
           variant={course.isLocked ? "secondary" : "default"}
         >

@@ -56,7 +56,7 @@ const AppContent = () => {
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/discussions" element={<Discussions />} />
           <Route path="/resources" element={<Resources />} />
-          <Route path="/course/:courseId/content" element={<CourseContent />} />
+          <Route path="/course/:id" element={<CourseContent />} />
         </Routes>
       </main>
     </div>

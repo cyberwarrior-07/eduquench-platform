@@ -9,11 +9,14 @@ import {
   BookOpen,
   Settings,
   ChevronLeft,
+  ToggleLeft,
+  ToggleRight,
 } from "lucide-react";
 import { useState } from "react";
 
 export function StudentSidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const links = [
     {
@@ -83,6 +86,24 @@ export function StudentSidebar() {
             </NavLink>
           ))}
         </nav>
+
+        {!isCollapsed && (
+          <div className="mt-4 flex items-center justify-between px-3 py-2">
+            <span className="text-sm text-gray-600">Dark Mode</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              className="h-8 w-8"
+            >
+              {isDarkMode ? (
+                <ToggleRight className="h-5 w-5 text-primary" />
+              ) : (
+                <ToggleLeft className="h-5 w-5 text-gray-400" />
+              )}
+            </Button>
+          </div>
+        )}
       </ScrollArea>
     </div>
   );

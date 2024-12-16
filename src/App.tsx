@@ -1,12 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Sidebar, SidebarContent, SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { StudentSidebar } from "@/components/StudentSidebar";
-import { AdminSidebar } from "@/components/AdminSidebar";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { Outlet } from "react-router-dom";
+
+// Layouts
+import { StudentLayout } from "@/layouts/StudentLayout";
+import { AdminLayout } from "@/layouts/AdminLayout";
 
 // Pages
 import Index from "@/pages/Index";
@@ -25,56 +23,6 @@ import AdminSettings from "@/pages/admin/Settings";
 import AdminAnalytics from "@/pages/admin/Analytics";
 
 const queryClient = new QueryClient();
-
-function StudentLayout() {
-  return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <div className="flex-1 flex">
-        <SidebarProvider defaultOpen={true}>
-          <div className="flex w-full">
-            <Sidebar className="flex-shrink-0 bg-white border-r" collapsible="icon">
-              <SidebarContent>
-                <StudentSidebar />
-              </SidebarContent>
-            </Sidebar>
-            <SidebarInset className="flex-1 p-4 md:p-6 w-full overflow-x-hidden bg-white">
-              <div className="container mx-auto max-w-7xl">
-                <Outlet />
-              </div>
-            </SidebarInset>
-          </div>
-        </SidebarProvider>
-      </div>
-      <Footer />
-    </div>
-  );
-}
-
-function AdminLayout() {
-  return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <div className="flex-1 flex">
-        <SidebarProvider defaultOpen={true}>
-          <div className="flex w-full">
-            <Sidebar className="flex-shrink-0 bg-white border-r" collapsible="icon">
-              <SidebarContent>
-                <AdminSidebar />
-              </SidebarContent>
-            </Sidebar>
-            <SidebarInset className="flex-1 p-4 md:p-6 w-full overflow-x-hidden bg-white">
-              <div className="container mx-auto max-w-7xl">
-                <Outlet />
-              </div>
-            </SidebarInset>
-          </div>
-        </SidebarProvider>
-      </div>
-      <Footer />
-    </div>
-  );
-}
 
 export default function App() {
   return (

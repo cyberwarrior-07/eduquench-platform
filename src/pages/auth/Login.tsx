@@ -73,8 +73,8 @@ export default function Login() {
           <div className="p-4 bg-primary-100 rounded-lg">
             <p className="text-sm text-primary-800">
               <strong>Demo Credentials:</strong><br />
-              Admin: admin@eduquench.com / admin123<br />
-              Student: student@eduquench.com / student123
+              Email: demo@eduquench.com<br />
+              Password: demo123
             </p>
           </div>
 

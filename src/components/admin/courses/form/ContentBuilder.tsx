@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { Button } from "@/components/ui/button";
-import { Plus, GripVertical, Video, FileText, BookOpen, Trash2 } from "lucide-react";
+import { Plus, GripVertical, Video, FileText, BookOpen, Trash2, Folder } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -19,12 +19,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 
 interface ContentItem {
   id: string;
   type: 'video' | 'quiz' | 'chapter' | 'lesson';
   title: string;
   description?: string;
+  content?: any;
 }
 
 export function ContentBuilder() {
@@ -74,10 +76,26 @@ export function ContentBuilder() {
       case 'quiz':
         return <FileText className="h-4 w-4" />;
       case 'chapter':
+        return <Folder className="h-4 w-4" />;
       case 'lesson':
         return <BookOpen className="h-4 w-4" />;
       default:
         return null;
+    }
+  };
+
+  const getItemBadgeColor = (type: string) => {
+    switch (type) {
+      case 'video':
+        return 'bg-blue-100 text-blue-800';
+      case 'quiz':
+        return 'bg-green-100 text-green-800';
+      case 'chapter':
+        return 'bg-purple-100 text-purple-800';
+      case 'lesson':
+        return 'bg-orange-100 text-orange-800';
+      default:
+        return '';
     }
   };
 
@@ -154,14 +172,19 @@ export function ContentBuilder() {
                     <div
                       ref={provided.innerRef}
                       {...provided.draggableProps}
-                      className="flex items-center gap-4 p-4 bg-background border rounded-lg"
+                      className="flex items-center gap-4 p-4 bg-background border rounded-lg group hover:border-primary/50 transition-colors"
                     >
                       <div {...provided.dragHandleProps}>
                         <GripVertical className="h-5 w-5 text-muted-foreground" />
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          {getItemIcon(item.type)}
+                          <Badge variant="secondary" className={getItemBadgeColor(item.type)}>
+                            <span className="flex items-center gap-1">
+                              {getItemIcon(item.type)}
+                              {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
+                            </span>
+                          </Badge>
                           <span className="font-medium">{item.title}</span>
                         </div>
                         {item.description && (
@@ -174,6 +197,7 @@ export function ContentBuilder() {
                         variant="ghost"
                         size="icon"
                         onClick={() => handleRemoveItem(item.id)}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

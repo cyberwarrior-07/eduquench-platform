@@ -1,7 +1,8 @@
 import React from 'react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
-import { Play, Pause, RotateCcw, Volume2, Maximize2 } from 'lucide-react';
+import { Play, Pause, RotateCcw, Volume2, Maximize2, VolumeX } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface VideoPlayerProps {
   videoUrl: string;
@@ -12,6 +13,8 @@ interface VideoPlayerProps {
 export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) => {
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [progress, setProgress] = React.useState(0);
+  const [volume, setVolume] = React.useState(1);
+  const [isMuted, setIsMuted] = React.useState(false);
   const videoRef = React.useRef<HTMLVideoElement>(null);
 
   const togglePlay = () => {
@@ -31,6 +34,36 @@ export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) =
       setProgress(progress);
     }
   };
+
+  const handleRestart = () => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+      setProgress(0);
+    }
+  };
+
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
+
+  const handleFullscreen = () => {
+    if (videoRef.current) {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        videoRef.current.requestFullscreen();
+      }
+    }
+  };
+
+  React.useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.volume = volume;
+    }
+  }, [volume]);
 
   return (
     <Card className="w-full bg-white shadow-sm">
@@ -56,7 +89,18 @@ export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) =
           <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
         </div>
         <div className="space-y-2">
-          <div className="h-1 w-full bg-gray-200 rounded">
+          <div 
+            className="h-1 w-full bg-gray-200 rounded cursor-pointer"
+            onClick={(e) => {
+              if (videoRef.current) {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const percentage = (x / rect.width) * 100;
+                videoRef.current.currentTime = (percentage / 100) * videoRef.current.duration;
+                setProgress(percentage);
+              }
+            }}
+          >
             <div
               className="h-full bg-primary rounded"
               style={{ width: `${progress}%` }}
@@ -72,14 +116,29 @@ export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) =
               >
                 {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
               </Button>
-              <Button variant="ghost" size="icon" className="hover:text-primary">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={handleRestart}
+                className="hover:text-primary"
+              >
                 <RotateCcw className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" className="hover:text-primary">
-                <Volume2 className="h-4 w-4" />
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={toggleMute}
+                className="hover:text-primary"
+              >
+                {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
               </Button>
             </div>
-            <Button variant="ghost" size="icon" className="hover:text-primary">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={handleFullscreen}
+              className="hover:text-primary"
+            >
               <Maximize2 className="h-4 w-4" />
             </Button>
           </div>

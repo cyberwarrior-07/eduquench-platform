@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { CourseBasicInfo } from "@/components/admin/courses/form/CourseBasicInfo";
 import { ContentBuilder } from "@/components/admin/courses/form/ContentBuilder";
 import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface CourseFormData {
   title: string;
@@ -68,17 +69,28 @@ export default function CourseForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
-        <Card className="p-6">
-          <CourseBasicInfo
-            formData={formData}
-            setFormData={setFormData}
-            isEditing={false}
-          />
-        </Card>
+        <Tabs defaultValue="basic" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="basic">Basic Information</TabsTrigger>
+            <TabsTrigger value="content">Course Content</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="basic">
+            <Card className="p-6">
+              <CourseBasicInfo
+                formData={formData}
+                setFormData={setFormData}
+                isEditing={false}
+              />
+            </Card>
+          </TabsContent>
 
-        <Card className="p-6">
-          <ContentBuilder />
-        </Card>
+          <TabsContent value="content">
+            <Card className="p-6">
+              <ContentBuilder />
+            </Card>
+          </TabsContent>
+        </Tabs>
 
         <div className="flex gap-4">
           <Button type="submit">Create Course</Button>

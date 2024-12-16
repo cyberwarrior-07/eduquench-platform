@@ -1,4 +1,4 @@
-export type ContentType = "video" | "quiz" | "chapter" | "lesson";
+export type ContentType = "video" | "quiz" | "chapter" | "live-class";
 
 export interface ContentFormProps {
   onChange: (data: any) => void;

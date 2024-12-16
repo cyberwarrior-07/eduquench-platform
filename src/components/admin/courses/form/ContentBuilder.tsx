@@ -17,23 +17,24 @@ import { ContentItem } from "./content-builder/ContentItem";
 import { VideoContentForm } from "./content-types/VideoContentForm";
 import { QuizContentForm } from "./content-types/QuizContentForm";
 import { ChapterContentForm } from "./content-types/ChapterContentForm";
-import { LessonContentForm } from "./content-types/LessonContentForm";
+import { LiveClassForm } from "./content-types/LiveClassForm";
 
 interface ContentItem {
   id: string;
-  type: "video" | "quiz" | "chapter" | "lesson";
+  type: "video" | "quiz" | "chapter" | "live-class";
   title: string;
   description?: string;
   content?: any;
+  parentId?: string;
 }
 
 export function ContentBuilder() {
   const [items, setItems] = useState<ContentItem[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newItem, setNewItem] = useState<Partial<ContentItem>>({
-    type: 'video',
+    type: 'chapter',
     title: '',
-    description: '',
+    description: ''
   });
 
   const handleDragEnd = (result: any) => {
@@ -53,14 +54,15 @@ export function ContentBuilder() {
       ...items,
       {
         id: crypto.randomUUID(),
-        type: newItem.type as "video" | "quiz" | "chapter" | "lesson",
+        type: newItem.type as "video" | "quiz" | "chapter" | "live-class",
         title: newItem.title,
         description: newItem.description,
         content: newItem.content,
-      },
+        parentId: newItem.type !== 'chapter' ? items.find(i => i.type === 'chapter')?.id : undefined
+      }
     ]);
 
-    setNewItem({ type: 'video', title: '', description: '' });
+    setNewItem({ type: 'chapter', title: '', description: '' });
     setIsDialogOpen(false);
   };
 
@@ -69,7 +71,7 @@ export function ContentBuilder() {
   };
 
   const renderContentForm = () => {
-    switch (newItem.type) {
+    switch(newItem.type) {
       case "video":
         return (
           <VideoContentForm
@@ -91,9 +93,9 @@ export function ContentBuilder() {
             onChange={(content) => setNewItem({ ...newItem, content })}
           />
         );
-      case "lesson":
+      case "live-class":
         return (
-          <LessonContentForm
+          <LiveClassForm
             value={newItem.content}
             onChange={(content) => setNewItem({ ...newItem, content })}
           />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -6,27 +6,46 @@ import { Button } from "@/components/ui/button";
 import { Upload, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { ContentFormProps } from "./types";
 
-interface VideoContentFormProps {
-  onChange: (data: any) => void;
-  value: any;
-}
-
-export function VideoContentForm({ onChange, value }: VideoContentFormProps) {
+export function VideoContentForm({ onChange, value }: ContentFormProps) {
   const [isUploading, setIsUploading] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // Check if file is video
+    if (!file.type.startsWith('video/')) {
+      toast.error('Please upload a video file');
+      return;
+    }
 
     setIsUploading(true);
     try {
       const fileExt = file.name.split('.').pop();
       const filePath = `${crypto.randomUUID()}.${fileExt}`;
 
+      // Create a temporary URL for the video to get its duration
+      const videoUrl = URL.createObjectURL(file);
+      const video = document.createElement('video');
+      video.src = videoUrl;
+      
+      await new Promise((resolve) => {
+        video.onloadedmetadata = () => {
+          const duration = Math.round(video.duration);
+          onChange({ ...value, duration, videoFile: file });
+          resolve(duration);
+        };
+      });
+
       const { error: uploadError } = await supabase.storage
         .from('course-videos')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
       if (uploadError) throw uploadError;
 
@@ -72,16 +91,11 @@ export function VideoContentForm({ onChange, value }: VideoContentFormProps) {
             disabled={isUploading}
           />
         </div>
-      </div>
-      <div>
-        <Label>Duration (minutes)</Label>
-        <Input
-          type="number"
-          min="1"
-          placeholder="Enter video duration"
-          value={value?.duration || ""}
-          onChange={(e) => onChange({ ...value, duration: e.target.value })}
-        />
+        {value.duration && (
+          <p className="text-sm text-muted-foreground mt-2">
+            Duration: {Math.floor(value.duration / 60)}m {value.duration % 60}s
+          </p>
+        )}
       </div>
       <div>
         <Label>Transcript</Label>

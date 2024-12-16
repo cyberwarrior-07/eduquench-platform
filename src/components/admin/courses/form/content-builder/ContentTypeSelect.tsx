@@ -22,10 +22,10 @@ export function ContentTypeSelect({ value, onChange }: ContentTypeSelectProps) {
           <SelectValue placeholder="Select content type" />
         </SelectTrigger>
         <SelectContent>
+          <SelectItem value="chapter">Chapter</SelectItem>
           <SelectItem value="video">Video</SelectItem>
           <SelectItem value="quiz">Quiz</SelectItem>
-          <SelectItem value="chapter">Chapter</SelectItem>
-          <SelectItem value="lesson">Lesson</SelectItem>
+          <SelectItem value="live-class">Live Class</SelectItem>
         </SelectContent>
       </Select>
     </div>

@@ -108,10 +108,6 @@ export default function Login() {
             }}
             providers={[]}
             theme="light"
-            onError={(error) => {
-              console.error('Auth error:', error);
-              toast.error(error.message || 'An error occurred during authentication');
-            }}
           />
         </Card>
       </div>

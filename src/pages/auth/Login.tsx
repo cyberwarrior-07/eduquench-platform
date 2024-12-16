@@ -30,11 +30,17 @@ export default function Login() {
     if (session) {
       try {
         // Get user role from profiles
-        const { data: profile } = await supabase
+        const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('role')
           .eq('id', session.user.id)
           .single();
+
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
+          toast.error('Error fetching user profile');
+          return;
+        }
 
         if (profile) {
           // Redirect based on role
@@ -43,11 +49,11 @@ export default function Login() {
           } else {
             navigate('/dashboard');
           }
-          toast('Successfully logged in');
+          toast.success('Successfully logged in');
         }
       } catch (error) {
-        console.error('Error fetching user role:', error);
-        toast('Error fetching user role');
+        console.error('Error in auth change:', error);
+        toast.error('Error during authentication');
       }
     }
   };
@@ -92,13 +98,8 @@ export default function Login() {
                 input: 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent',
               },
             }}
-            providers={['google', 'github']}
+            providers={[]}
             theme="light"
-            socialLayout="horizontal"
-            providerScopes={{
-              google: 'profile email',
-              github: 'read:user user:email'
-            }}
           />
         </Card>
       </div>

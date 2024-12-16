@@ -15,8 +15,8 @@ interface QuizQuestion {
 }
 
 interface QuizEditorProps {
-  quizId: string;
-  onSave: () => void;
+  quizId?: string;
+  onSave: (quizId: string) => void;  // Updated this line to expect a string parameter
 }
 
 export function QuizEditor({ quizId, onSave }: QuizEditorProps) {

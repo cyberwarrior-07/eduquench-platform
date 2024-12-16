@@ -20,7 +20,7 @@ interface FormData {
   description: string;
   type: ContentType;
   content: Json;
-  quizId?: string; // Added this to handle quiz editing
+  quizId?: string;
 }
 
 interface AddContentFormProps {

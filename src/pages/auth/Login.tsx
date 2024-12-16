@@ -95,16 +95,16 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-primary-100 to-white px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-lg shadow-xl">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-white px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md space-y-6 bg-white p-8">
         <div className="flex flex-col items-center justify-center space-y-2">
-          <div className="p-3 bg-primary-100 rounded-full">
-            <LogIn className="h-8 w-8 text-primary" />
+          <div className="p-2 bg-primary-50 rounded-full">
+            <LogIn className="h-6 w-6 text-primary" />
           </div>
-          <h2 className="mt-2 text-center text-3xl font-bold tracking-tight text-gray-900">
-            Welcome to DESIGNO
+          <h2 className="text-center text-2xl font-medium text-gray-900">
+            Welcome to EduQuench
           </h2>
-          <p className="text-center text-sm text-gray-600">
+          <p className="text-center text-sm text-gray-500">
             Sign in to access your account
           </p>
         </div>
@@ -116,8 +116,8 @@ const Login = () => {
               button: { 
                 background: '#FF4500',
                 color: 'white',
-                borderRadius: '0.5rem',
-                height: '2.75rem',
+                borderRadius: '0.375rem',
+                height: '2.5rem',
               },
               anchor: { 
                 color: '#FF4500',
@@ -128,20 +128,20 @@ const Login = () => {
               },
               divider: {
                 background: '#E5E7EB',
-                margin: '1.5rem 0'
+                margin: '1rem 0'
               },
               input: {
-                borderRadius: '0.5rem',
-                padding: '0.75rem 1rem',
+                borderRadius: '0.375rem',
+                padding: '0.625rem 0.875rem',
               },
               message: {
-                borderRadius: '0.5rem',
-                padding: '0.75rem 1rem',
-                marginBottom: '1rem'
+                borderRadius: '0.375rem',
+                padding: '0.625rem 0.875rem',
+                marginBottom: '0.75rem'
               },
               label: {
                 color: '#374151',
-                marginBottom: '0.5rem'
+                marginBottom: '0.375rem'
               }
             },
           }}

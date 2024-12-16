@@ -73,6 +73,12 @@ const Login = () => {
           console.error('Error fetching user role:', error);
           toast.error('Error fetching user role');
         }
+      } else if (event === 'SIGNED_OUT') {
+        console.log('User signed out');
+      } else if (event === 'USER_DELETED') {
+        console.log('User deleted');
+      } else if (event === 'USER_UPDATED') {
+        console.log('User updated');
       }
     });
 
@@ -98,9 +104,19 @@ const Login = () => {
         </div>
         <Auth
           supabaseClient={supabase}
-          appearance={{ theme: ThemeSupa }}
+          appearance={{ 
+            theme: ThemeSupa,
+            style: {
+              button: { background: '#4F46E5', color: 'white' },
+              anchor: { color: '#4F46E5' },
+            },
+          }}
           providers={['google']}
-          redirectTo={window.location.origin}
+          redirectTo={`${window.location.origin}/dashboard`}
+          onError={(error) => {
+            console.error('Auth error:', error);
+            toast.error(error.message || 'Authentication failed');
+          }}
           theme="light"
         />
       </div>

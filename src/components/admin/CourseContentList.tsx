@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { Json } from "@/integrations/supabase/types";
 
 interface CourseContentListProps {
   courseId: string;
@@ -32,7 +33,7 @@ interface FormData {
   title: string;
   description: string;
   type: ContentType;
-  content: Record<string, unknown>;
+  content: Json;
 }
 
 export function CourseContentList({ courseId }: CourseContentListProps) {
@@ -115,7 +116,7 @@ export function CourseContentList({ courseId }: CourseContentListProps) {
     createMutation.mutate(formData);
   };
 
-  const getContentIcon = (type: string) => {
+  const getContentIcon = (type: ContentType) => {
     switch (type) {
       case "video":
         return <Video className="h-4 w-4" />;
@@ -175,7 +176,7 @@ export function CourseContentList({ courseId }: CourseContentListProps) {
                 <Label htmlFor="type">Type</Label>
                 <Select
                   value={formData.type}
-                  onValueChange={(value) =>
+                  onValueChange={(value: ContentType) =>
                     setFormData({ ...formData, type: value })
                   }
                 >
@@ -204,7 +205,7 @@ export function CourseContentList({ courseId }: CourseContentListProps) {
           >
             <div className="flex items-center gap-4">
               <div className="bg-gray-100 p-2 rounded-full">
-                {getContentIcon(content.type)}
+                {getContentIcon(content.type as ContentType)}
               </div>
               <div>
                 <h3 className="font-medium">{content.title}</h3>

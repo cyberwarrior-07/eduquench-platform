@@ -2,81 +2,103 @@ import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Header } from '@/components/Header';
 
 export default function Login() {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     console.log('Login component mounted');
     
     // Check if user is already logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Current session:', session);
-      if (session) {
-        handleAuthChange(session);
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log('Current session:', session);
+        if (session) {
+          await handleAuthChange(session);
+        }
+      } catch (error) {
+        console.error('Error checking session:', error);
+        toast.error('Error checking authentication status');
+      } finally {
+        setIsLoading(false);
       }
-    });
+    };
+
+    checkSession();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       console.log('Auth state changed:', _event);
       console.log('Session data:', session);
-      if (_event === 'SIGNED_IN') {
+      
+      if (_event === 'SIGNED_IN' && session) {
         console.log('User signed in successfully');
-        handleAuthChange(session);
+        await handleAuthChange(session);
       } else if (_event === 'SIGNED_OUT') {
         console.log('User signed out');
         navigate('/login');
       }
     });
 
-    return () => subscription.unsubscribe();
-  }, []);
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   const handleAuthChange = async (session: any) => {
-    if (session) {
-      try {
-        console.log('Fetching user profile for:', session.user.id);
-        
-        // Get user role from profiles
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', session.user.id)
-          .single();
+    if (!session) return;
 
-        if (profileError) {
-          console.error('Error fetching profile:', profileError);
-          toast.error('Error fetching user profile. Please try again.');
-          return;
-        }
+    try {
+      console.log('Fetching user profile for:', session.user.id);
+      
+      // Get user role from profiles
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
 
-        console.log('User profile:', profile);
-
-        if (profile) {
-          // Redirect based on role
-          if (profile.role === 'admin') {
-            console.log('Redirecting to admin dashboard');
-            navigate('/admin');
-          } else {
-            console.log('Redirecting to user dashboard');
-            navigate('/dashboard');
-          }
-          toast.success('Successfully logged in');
-        } else {
-          console.error('No profile found for user');
-          toast.error('User profile not found. Please contact support.');
-        }
-      } catch (error) {
-        console.error('Error in auth change:', error);
-        toast.error('Authentication error. Please try again.');
+      if (profileError) {
+        console.error('Error fetching profile:', profileError);
+        toast.error('Error fetching user profile. Please try again.');
+        return;
       }
+
+      console.log('User profile:', profile);
+
+      if (profile) {
+        // Redirect based on role
+        if (profile.role === 'admin') {
+          console.log('Redirecting to admin dashboard');
+          navigate('/admin');
+        } else {
+          console.log('Redirecting to user dashboard');
+          navigate('/dashboard');
+        }
+        toast.success('Successfully logged in');
+      } else {
+        console.error('No profile found for user');
+        toast.error('User profile not found. Please contact support.');
+      }
+    } catch (error) {
+      console.error('Error in auth change:', error);
+      toast.error('Authentication error. Please try again.');
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-primary-100 via-background to-secondary flex items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary-100 via-background to-secondary">

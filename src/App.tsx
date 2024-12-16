@@ -17,6 +17,26 @@ import LiveSessions from "./pages/student/LiveSessions";
 import { SessionContextProvider } from '@supabase/auth-helpers-react';
 import { supabase } from "./integrations/supabase/client";
 import { Toaster } from "sonner";
+import { SidebarProvider, Sidebar, SidebarContent, SidebarInset } from "@/components/ui/sidebar";
+import { StudentSidebar } from "@/components/StudentSidebar";
+
+// Create a StudentLayout component for consistent sidebar across student pages
+const StudentLayout = () => {
+  return (
+    <SidebarProvider defaultOpen={true}>
+      <div className="flex min-h-screen w-full">
+        <Sidebar>
+          <SidebarContent>
+            <StudentSidebar />
+          </SidebarContent>
+        </Sidebar>
+        <SidebarInset>
+          <Outlet />
+        </SidebarInset>
+      </div>
+    </SidebarProvider>
+  );
+};
 
 function App() {
   return (
@@ -27,15 +47,17 @@ function App() {
           <Route path="/" element={<Index />} />
           <Route path="/courses" element={<Courses />} />
           
-          {/* Student routes */}
-          <Route path="/dashboard" element={<StudentDashboard />} />
-          <Route path="/assignments" element={<Assignments />} />
-          <Route path="/course-content" element={<CourseContent />} />
-          <Route path="/discussions" element={<Discussions />} />
-          <Route path="/resources" element={<Resources />} />
-          <Route path="/schedule" element={<Schedule />} />
-          <Route path="/quizzes" element={<Quizzes />} />
-          <Route path="/live-sessions" element={<LiveSessions />} />
+          {/* Student routes - wrapped with StudentLayout */}
+          <Route element={<StudentLayout />}>
+            <Route path="/dashboard" element={<StudentDashboard />} />
+            <Route path="/assignments" element={<Assignments />} />
+            <Route path="/course-content" element={<CourseContent />} />
+            <Route path="/discussions" element={<Discussions />} />
+            <Route path="/resources" element={<Resources />} />
+            <Route path="/schedule" element={<Schedule />} />
+            <Route path="/quizzes" element={<Quizzes />} />
+            <Route path="/live-sessions" element={<LiveSessions />} />
+          </Route>
           
           {/* Admin routes */}
           <Route path="/admin" element={<AdminLayout><Outlet /></AdminLayout>}>

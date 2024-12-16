@@ -1,19 +1,23 @@
-import { Auth } from "@supabase/auth-ui-react";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { LogIn } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { LoadingState } from "@/components/auth/LoadingState";
 
-const Login = () => {
+const CMSLogin = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    console.log("Login component mounted");
+    console.log("CMS Login component mounted");
     
     const checkSession = async () => {
       try {
@@ -70,18 +74,40 @@ const Login = () => {
 
       console.log("User profile:", profile);
 
-      if (profile?.role === 'student') {
-        console.log("Redirecting to student dashboard");
-        navigate('/dashboard');
+      if (profile?.role === 'admin') {
+        console.log("Redirecting to admin dashboard");
+        navigate('/admin');
       } else {
-        console.log("Unauthorized access, redirecting to CMS login");
-        toast.error("Please use the CMS login page for admin access.");
+        console.log("Unauthorized access, redirecting to login");
+        toast.error("Unauthorized access. Please use the student login page.");
         await supabase.auth.signOut();
-        navigate('/cms');
+        navigate('/login');
       }
     } catch (error) {
       console.error("Error handling user session:", error);
       toast.error("Error fetching user role. Please try again.");
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) throw error;
+      
+      if (data.session) {
+        await handleUserSession(data.session);
+      }
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -98,51 +124,50 @@ const Login = () => {
           </div>
           <div className="space-y-2 text-center">
             <CardTitle className="text-3xl font-bold tracking-tight">
-              Student Login
+              CMS Login
             </CardTitle>
             <CardDescription className="text-base">
-              Sign in to access your learning dashboard
+              Sign in to access the admin dashboard
             </CardDescription>
           </div>
         </CardHeader>
         <CardContent className="pb-8">
-          <div className="space-y-4">
-            <Auth
-              supabaseClient={supabase}
-              appearance={{
-                theme: ThemeSupa,
-                style: {
-                  button: {
-                    background: 'rgb(var(--primary))',
-                    color: 'white',
-                    padding: '10px',
-                    borderRadius: '6px',
-                    width: '100%',
-                    marginTop: '10px',
-                  },
-                  input: {
-                    borderRadius: '6px',
-                    padding: '10px',
-                    border: '1px solid rgb(var(--border))',
-                  },
-                  message: {
-                    color: 'rgb(var(--foreground))',
-                    marginBottom: '10px',
-                  }
-                }
-              }}
-              theme="light"
-              providers={[]}
-              redirectTo={window.location.origin}
-            />
-            <div className="mt-4 text-center text-sm text-gray-500">
-              <p>For admin access, please use the <a href="/cms" className="text-primary hover:underline">CMS login page</a></p>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </div>
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Signing in..." : "Sign in"}
+            </Button>
+            <div className="mt-4 text-center text-sm text-gray-500">
+              <p>For student access, please use the <a href="/login" className="text-primary hover:underline">student login page</a></p>
+            </div>
+          </form>
         </CardContent>
       </Card>
     </div>
   );
 };
 
-export default Login;
+export default CMSLogin;

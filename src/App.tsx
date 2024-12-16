@@ -5,6 +5,7 @@ import APISettings from "./pages/admin/APISettings";
 import CourseList from "./pages/admin/courses/CourseList";
 import CourseForm from "./pages/admin/courses/CourseForm";
 import Login from "./pages/auth/Login";
+import CMSLogin from "./pages/auth/CMSLogin";
 import Index from "./pages/Index";
 import Courses from "./pages/Courses";
 import { useEffect, useState } from "react";
@@ -76,6 +77,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/cms" element={<CMSLogin />} />
         <Route path="/courses" element={<Courses />} />
         
         <Route path="/admin" element={

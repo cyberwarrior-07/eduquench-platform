@@ -6,7 +6,7 @@ import CourseList from "./pages/admin/courses/CourseList";
 import CourseForm from "./pages/admin/courses/CourseForm";
 import Index from "./pages/Index";
 import Courses from "./pages/Courses";
-import Dashboard from "./pages/student/Dashboard";
+import StudentDashboard from "./pages/student/Dashboard";
 import { useEffect, useState } from "react";
 import { supabase } from "./integrations/supabase/client";
 import { toast } from "sonner";
@@ -17,7 +17,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/courses" element={<Courses />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard" element={<StudentDashboard />} />
         
         <Route path="/admin" element={<AdminLayout><Outlet /></AdminLayout>}>
           <Route index element={<AdminDashboard />} />

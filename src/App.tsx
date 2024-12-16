@@ -14,6 +14,8 @@ import Discussions from "./pages/Discussions";
 import Resources from "./pages/Resources";
 import CourseContent from "./pages/CourseContent";
 import { StudentSidebar } from "./components/StudentSidebar";
+import { AdminLayout } from "./components/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./components/ui/button";
 
@@ -24,6 +26,18 @@ const AppContent = () => {
   const location = useLocation();
   
   const isLMSRoute = !['/'].includes(location.pathname);
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
+  if (isAdminRoute) {
+    return (
+      <AdminLayout>
+        <Routes>
+          <Route path="/admin" element={<AdminDashboard />} />
+          {/* Add other admin routes here */}
+        </Routes>
+      </AdminLayout>
+    );
+  }
 
   return (
     <div className="flex min-h-screen">

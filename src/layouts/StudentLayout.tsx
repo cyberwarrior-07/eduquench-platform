@@ -8,25 +8,23 @@ export function StudentLayout() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <div className="flex-1">
-        <SidebarProvider defaultOpen={true}>
-          <div className="flex w-full min-h-[calc(100vh-4rem)]">
-            <Sidebar 
-              className="flex-shrink-0 bg-white border-r shadow-sm transition-all duration-300 ease-in-out" 
-              collapsible="icon"
-            >
-              <SidebarContent>
-                <StudentSidebar />
-              </SidebarContent>
-            </Sidebar>
-            <SidebarInset className="flex-1 p-4 md:p-6 bg-gray-50 transition-all duration-300 ease-in-out">
-              <div className="container mx-auto max-w-7xl">
-                <Outlet />
-              </div>
-            </SidebarInset>
-          </div>
-        </SidebarProvider>
-      </div>
+      <SidebarProvider defaultOpen={true}>
+        <div className="flex-1 flex h-[calc(100vh-4rem)]">
+          <Sidebar 
+            className="border-r border-gray-200 bg-white shadow-sm" 
+            collapsible="icon"
+          >
+            <SidebarContent>
+              <StudentSidebar />
+            </SidebarContent>
+          </Sidebar>
+          <SidebarInset className="flex-1 bg-gray-50 p-4 md:p-6 overflow-y-auto">
+            <div className="container mx-auto max-w-7xl">
+              <Outlet />
+            </div>
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
       <Footer />
     </div>
   );

@@ -1,56 +1,105 @@
-import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { Button } from "./ui/button";
+import { ScrollArea } from "./ui/scroll-area";
 import {
   BookOpen,
-  FileText,
-  MessageSquare,
   Calendar,
-  Library,
-  Video,
+  ChevronLeft,
   GraduationCap,
-  Clock
+  LayoutDashboard,
+  Library,
+  MessageSquare,
+  PenBox,
 } from "lucide-react";
+import { NavLink } from "react-router-dom";
+import { useState } from "react";
 
-export const StudentSidebar = () => {
-  const location = useLocation();
+interface StudentSidebarProps {
+  className?: string;
+}
 
-  const isActive = (path: string) => location.pathname === path;
+export const StudentSidebar = ({ className }: StudentSidebarProps) => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const links = [
-    { href: "/dashboard", label: "Dashboard", icon: GraduationCap },
-    { href: "/course-content", label: "Course Content", icon: BookOpen },
-    { href: "/assignments", label: "Assignments", icon: FileText },
-    { href: "/discussions", label: "Discussions", icon: MessageSquare },
-    { href: "/schedule", label: "Schedule", icon: Calendar },
-    { href: "/resources", label: "Resources", icon: Library },
-    { href: "/live-sessions", label: "Live Sessions", icon: Video },
-    { href: "/quizzes", label: "Quizzes", icon: Clock },
+    {
+      title: "Dashboard",
+      icon: LayoutDashboard,
+      href: "/student/dashboard",
+    },
+    {
+      title: "Courses",
+      icon: BookOpen,
+      href: "/courses",
+    },
+    {
+      title: "Live Sessions",
+      icon: GraduationCap,
+      href: "/student/live-sessions",
+    },
+    {
+      title: "Schedule",
+      icon: Calendar,
+      href: "/schedule",
+    },
+    {
+      title: "Resources",
+      icon: Library,
+      href: "/resources",
+    },
+    {
+      title: "Assignments",
+      icon: PenBox,
+      href: "/assignments",
+    },
+    {
+      title: "Discussions",
+      icon: MessageSquare,
+      href: "/discussions",
+    },
   ];
 
   return (
-    <div className="pb-12 w-full">
-      <div className="space-y-4 py-4">
-        <div className="px-3 py-2">
-          <div className="space-y-1">
-            {links.map((link) => {
-              const Icon = link.icon;
-              return (
-                <Link
-                  key={link.href}
-                  to={link.href}
-                  className={cn(
-                    "flex items-center rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors",
-                    isActive(link.href) ? "bg-accent text-accent-foreground" : "text-muted-foreground"
-                  )}
-                >
-                  <Icon className="mr-2 h-4 w-4" />
-                  {link.label}
-                </Link>
-              );
-            })}
-          </div>
+    <div
+      className={cn(
+        "relative flex flex-col h-full border-r bg-background transition-all duration-300",
+        isCollapsed ? "w-[60px]" : "w-[240px]",
+        className
+      )}
+    >
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute -right-4 top-6 z-10 rounded-full border shadow-md"
+        onClick={() => setIsCollapsed(!isCollapsed)}
+      >
+        <ChevronLeft
+          className={cn(
+            "h-4 w-4 transition-all",
+            isCollapsed ? "rotate-180" : "rotate-0"
+          )}
+        />
+      </Button>
+      <ScrollArea className="flex-1">
+        <div className="space-y-1 p-2">
+          {links.map((link) => (
+            <NavLink
+              key={link.href}
+              to={link.href}
+              className={({ isActive }) =>
+                cn(
+                  "flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-all hover:bg-accent hover:text-accent-foreground",
+                  isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground",
+                  isCollapsed && "justify-center"
+                )
+              }
+            >
+              <link.icon className="h-4 w-4" />
+              {!isCollapsed && <span>{link.title}</span>}
+            </NavLink>
+          ))}
         </div>
-      </div>
+      </ScrollArea>
     </div>
   );
 };

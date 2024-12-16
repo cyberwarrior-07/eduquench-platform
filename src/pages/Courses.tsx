@@ -10,7 +10,6 @@ import {
 import { useState } from "react";
 import { Course } from "@/types/course";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -46,44 +45,36 @@ const mapDBCourseToCourse = (dbCourse: DBCourse): Course => ({
 });
 
 const Courses = () => {
-  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
-  const { data: dbCourses, isLoading, error } = useQuery({
+  const { data: courses = [], isLoading, error } = useQuery({
     queryKey: ['courses'],
     queryFn: async () => {
       console.log('Fetching courses...');
-      let query = supabase
+      const { data, error } = await supabase
         .from('courses')
-        .select('*');
-      
-      // Only fetch published courses
-      query = query.eq('is_published', true);
-      
-      const { data, error } = await query;
+        .select('*')
+        .eq('is_published', true);
       
       if (error) {
         console.error('Error fetching courses:', error);
-        toast.error('Error fetching courses');
+        toast.error('Failed to load courses');
         throw error;
       }
 
       console.log('Courses fetched:', data);
-      return data || [];
+      return (data || []).map(mapDBCourseToCourse);
     },
   });
 
   if (error) {
     console.error('Query error:', error);
-    toast.error('Failed to load courses');
-    return <div>Error loading courses</div>;
+    return <div className="container mx-auto py-8">Failed to load courses</div>;
   }
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div className="container mx-auto py-8">Loading...</div>;
   }
-
-  const courses = dbCourses.map(mapDBCourseToCourse);
 
   const filteredCourses = courses.filter(course =>
     selectedCategory === "all" ? true : course.category === selectedCategory

@@ -123,38 +123,35 @@ const Login = () => {
                   background: 'var(--primary)',
                   color: 'white',
                   borderRadius: '0.375rem',
-                  height: '2.5rem',
-                  hover: {
-                    background: 'var(--primary-600)',
-                  },
+                  height: '2.5rem'
                 },
                 anchor: {
                   color: 'var(--primary)',
-                  fontWeight: '500',
+                  fontWeight: '500'
                 },
                 container: {
-                  width: '100%',
+                  width: '100%'
                 },
                 divider: {
                   background: 'hsl(var(--border))',
-                  margin: '1rem 0',
+                  margin: '1rem 0'
                 },
                 input: {
                   borderRadius: '0.375rem',
                   padding: '0.625rem 0.875rem',
                   backgroundColor: 'transparent',
-                  border: '1px solid hsl(var(--border))',
+                  border: '1px solid hsl(var(--border))'
                 },
                 message: {
                   borderRadius: '0.375rem',
                   padding: '0.625rem 0.875rem',
-                  marginBottom: '0.75rem',
+                  marginBottom: '0.75rem'
                 },
                 label: {
                   color: 'hsl(var(--foreground))',
-                  marginBottom: '0.375rem',
-                },
-              },
+                  marginBottom: '0.375rem'
+                }
+              }
             }}
             theme="light"
             providers={[]}

@@ -28,12 +28,12 @@ const queryClient = new QueryClient();
 
 function StudentLayout() {
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col">
       <Header />
       <div className="flex-1 flex">
-        <SidebarProvider>
+        <SidebarProvider defaultOpen={true}>
           <div className="flex w-full">
-            <Sidebar className="flex-shrink-0 bg-white border-r">
+            <Sidebar className="flex-shrink-0 bg-white border-r" collapsible="icon">
               <SidebarContent>
                 <StudentSidebar />
               </SidebarContent>
@@ -53,12 +53,12 @@ function StudentLayout() {
 
 function AdminLayout() {
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col">
       <Header />
       <div className="flex-1 flex">
-        <SidebarProvider>
+        <SidebarProvider defaultOpen={true}>
           <div className="flex w-full">
-            <Sidebar className="flex-shrink-0 bg-white border-r">
+            <Sidebar className="flex-shrink-0 bg-white border-r" collapsible="icon">
               <SidebarContent>
                 <AdminSidebar />
               </SidebarContent>

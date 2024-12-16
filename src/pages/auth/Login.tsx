@@ -11,8 +11,11 @@ export default function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log('Login component mounted');
+    
     // Check if user is already logged in
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Current session:', session);
       if (session) {
         handleAuthChange(session);
       }
@@ -20,6 +23,7 @@ export default function Login() {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log('Auth state changed:', _event, session);
       handleAuthChange(session);
     });
 
@@ -29,6 +33,8 @@ export default function Login() {
   const handleAuthChange = async (session: any) => {
     if (session) {
       try {
+        console.log('Fetching user profile for:', session.user.id);
+        
         // Get user role from profiles
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
@@ -41,6 +47,8 @@ export default function Login() {
           toast.error('Error fetching user profile');
           return;
         }
+
+        console.log('User profile:', profile);
 
         if (profile) {
           // Redirect based on role
@@ -100,6 +108,10 @@ export default function Login() {
             }}
             providers={[]}
             theme="light"
+            onError={(error) => {
+              console.error('Auth error:', error);
+              toast.error(error.message || 'An error occurred during authentication');
+            }}
           />
         </Card>
       </div>

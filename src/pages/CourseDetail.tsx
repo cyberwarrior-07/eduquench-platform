@@ -6,6 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Database } from "@/integrations/supabase/types";
+
+type CourseWithMentor = Database['public']['Tables']['courses']['Row'] & {
+  mentor: {
+    username: string | null;
+    avatar_url: string | null;
+  } | null;
+};
 
 export default function CourseDetail() {
   const { id } = useParams();
@@ -17,7 +25,7 @@ export default function CourseDetail() {
         .from('courses')
         .select(`
           *,
-          mentor:mentor_id (
+          mentor:profiles!courses_mentor_id_fkey (
             username,
             avatar_url
           )
@@ -31,13 +39,15 @@ export default function CourseDetail() {
         throw error;
       }
       
+      const courseWithMentor = data as CourseWithMentor;
+      
       return {
-        ...data,
+        ...courseWithMentor,
         duration: '10 weeks', // Default value
         lessons: 12, // Default value
         level: 'Beginner', // Default value
-        enrollmentStatus: data.is_published ? 'Open' : 'Closed',
-        isLocked: !data.is_published,
+        enrollmentStatus: courseWithMentor.is_published ? 'Open' : 'Closed',
+        isLocked: !courseWithMentor.is_published,
         objectives: [],
         requirements: [],
         progress: 0,
@@ -132,7 +142,7 @@ export default function CourseDetail() {
           <div className="border rounded-lg p-6 space-y-6">
             <div className="flex items-center gap-4">
               <img
-                src={`https://api.dicebear.com/7.x/initials/svg?seed=${course.mentor?.username || 'Instructor'}`}
+                src={course.mentor?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${course.mentor?.username || 'Instructor'}`}
                 alt={course.mentor?.username || 'Instructor'}
                 className="w-12 h-12 rounded-full"
               />

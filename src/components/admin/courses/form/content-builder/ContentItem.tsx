@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { GripVertical, Video, FileText, BookOpen, Trash2, Folder } from "lucide-react";
+import { GripVertical, Video, FileText, Folder, Trash2, Video2 } from "lucide-react";
 import { ContentType } from "../content-types/types";
 
 interface ContentItemProps {
@@ -21,8 +21,8 @@ export function ContentItem({ id, type, title, description, onRemove, dragHandle
         return <FileText className="h-4 w-4" />;
       case 'chapter':
         return <Folder className="h-4 w-4" />;
-      case 'lesson':
-        return <BookOpen className="h-4 w-4" />;
+      case 'live-class':
+        return <Video2 className="h-4 w-4" />;
       default:
         return null;
     }
@@ -36,7 +36,7 @@ export function ContentItem({ id, type, title, description, onRemove, dragHandle
         return 'bg-green-100 text-green-800';
       case 'chapter':
         return 'bg-purple-100 text-purple-800';
-      case 'lesson':
+      case 'live-class':
         return 'bg-orange-100 text-orange-800';
       default:
         return '';
@@ -53,7 +53,7 @@ export function ContentItem({ id, type, title, description, onRemove, dragHandle
           <Badge variant="secondary" className={getItemBadgeColor(type)}>
             <span className="flex items-center gap-1">
               {getItemIcon(type)}
-              {type.charAt(0).toUpperCase() + type.slice(1)}
+              {type.charAt(0).toUpperCase() + type.slice(1).replace('-', ' ')}
             </span>
           </Badge>
           <span className="font-medium">{title}</span>

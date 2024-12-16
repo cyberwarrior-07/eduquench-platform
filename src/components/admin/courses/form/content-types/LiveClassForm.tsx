@@ -1,68 +1,59 @@
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { useState } from "react";
 import { ContentFormProps } from "./types";
 
-export function LiveClassForm({ onChange, value }: ContentFormProps) {
-  const [date, setDate] = useState<Date>();
+export function LiveClassForm({ value, onChange }: ContentFormProps) {
+  const [meetLink, setMeetLink] = useState(value?.meetLink || "");
+  const [scheduledTime, setScheduledTime] = useState(value?.scheduledTime || "");
+  const [duration, setDuration] = useState(value?.duration || "60");
 
-  const handleDateSelect = (newDate: Date | undefined) => {
-    setDate(newDate);
-    if (newDate) {
-      onChange({ ...value, scheduledDate: newDate.toISOString() });
-    }
+  const handleChange = (field: string, newValue: string) => {
+    const updatedValue = {
+      ...value,
+      [field]: newValue,
+    };
+    onChange(updatedValue);
   };
 
   return (
     <div className="space-y-4">
       <div>
-        <Label>Schedule Date</Label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-full justify-start text-left font-normal",
-                !date && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {date ? format(date, "PPP") : <span>Pick a date</span>}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0">
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={handleDateSelect}
-              initialFocus
-            />
-          </PopoverContent>
-        </Popover>
+        <Label>Meeting Link</Label>
+        <Input
+          type="url"
+          value={meetLink}
+          onChange={(e) => {
+            setMeetLink(e.target.value);
+            handleChange("meetLink", e.target.value);
+          }}
+          placeholder="Google Meet link"
+        />
       </div>
+      
+      <div>
+        <Label>Scheduled Time</Label>
+        <Input
+          type="datetime-local"
+          value={scheduledTime}
+          onChange={(e) => {
+            setScheduledTime(e.target.value);
+            handleChange("scheduledTime", e.target.value);
+          }}
+        />
+      </div>
+
       <div>
         <Label>Duration (minutes)</Label>
         <Input
           type="number"
           min="15"
-          step="15"
-          value={value?.duration || "60"}
-          onChange={(e) => onChange({ ...value, duration: e.target.value })}
-        />
-      </div>
-      <div>
-        <Label>Meeting Description</Label>
-        <Textarea
-          placeholder="Add meeting description"
-          value={value?.description || ""}
-          onChange={(e) => onChange({ ...value, description: e.target.value })}
+          max="180"
+          value={duration}
+          onChange={(e) => {
+            setDuration(e.target.value);
+            handleChange("duration", e.target.value);
+          }}
         />
       </div>
     </div>

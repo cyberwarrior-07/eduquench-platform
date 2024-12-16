@@ -18,10 +18,11 @@ import { VideoContentForm } from "./content-types/VideoContentForm";
 import { QuizContentForm } from "./content-types/QuizContentForm";
 import { ChapterContentForm } from "./content-types/ChapterContentForm";
 import { LiveClassForm } from "./content-types/LiveClassForm";
+import { ContentType } from "./content-types/types";
 
 interface ContentItem {
   id: string;
-  type: "video" | "quiz" | "chapter" | "live-class";
+  type: ContentType;
   title: string;
   description?: string;
   content?: any;
@@ -54,7 +55,7 @@ export function ContentBuilder() {
       ...items,
       {
         id: crypto.randomUUID(),
-        type: newItem.type as "video" | "quiz" | "chapter" | "live-class",
+        type: newItem.type as ContentType,
         title: newItem.title,
         description: newItem.description,
         content: newItem.content,
@@ -122,7 +123,7 @@ export function ContentBuilder() {
             </DialogHeader>
             <div className="space-y-4">
               <ContentTypeSelect
-                value={newItem.type as "video" | "quiz" | "chapter" | "lesson"}
+                value={newItem.type as "video" | "quiz" | "chapter" | "live-class"}
                 onChange={(type) => setNewItem({ ...newItem, type, content: {} })}
               />
               <div>

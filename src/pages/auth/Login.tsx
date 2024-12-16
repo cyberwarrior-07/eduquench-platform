@@ -15,26 +15,7 @@ const Login = () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', session.user.id)
-            .single();
-
-          if (profile) {
-            switch (profile.role) {
-              case 'admin':
-                navigate('/admin');
-                break;
-              case 'mentor':
-                navigate('/mentor');
-                break;
-              case 'student':
-              default:
-                navigate('/dashboard');
-                break;
-            }
-          }
+          handleUserSession(session);
         }
       } catch (error) {
         console.error('Error checking session:', error);
@@ -49,42 +30,40 @@ const Login = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event);
       if (event === 'SIGNED_IN' && session) {
-        try {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', session.user.id)
-            .single();
-
-          if (profile) {
-            switch (profile.role) {
-              case 'admin':
-                navigate('/admin');
-                break;
-              case 'mentor':
-                navigate('/mentor');
-                break;
-              case 'student':
-              default:
-                navigate('/dashboard');
-                break;
-            }
-          }
-        } catch (error) {
-          console.error('Error fetching user role:', error);
-          toast.error('Error fetching user role');
-        }
-      } else if (event === 'SIGNED_OUT') {
-        console.log('User signed out');
-      } else if (event === 'TOKEN_REFRESHED') {
-        console.log('Token refreshed');
+        handleUserSession(session);
       }
     });
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, [navigate]);
+
+  const handleUserSession = async (session: any) => {
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+
+      if (profile) {
+        switch (profile.role) {
+          case 'admin':
+            navigate('/admin');
+            break;
+          case 'mentor':
+            navigate('/mentor');
+            break;
+          case 'student':
+          default:
+            navigate('/dashboard');
+            break;
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching user role:', error);
+      toast.error('Error fetching user role');
+    }
+  };
 
   if (loading) {
     return (

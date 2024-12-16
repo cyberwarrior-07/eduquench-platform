@@ -133,10 +133,10 @@ const Login = () => {
                   width: '100%',
                   padding: '0.75rem 1rem',
                   boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-                  '&:hover': {
+                  ':hover': {
                     background: '#CC3700',
                   },
-                  '&:focus': {
+                  ':focus': {
                     outline: 'none',
                     boxShadow: '0 0 0 2px rgba(255, 69, 0, 0.2)',
                   }
@@ -145,7 +145,7 @@ const Login = () => {
                   color: '#FF4500',
                   fontWeight: '500',
                   textDecoration: 'none',
-                  '&:hover': {
+                  ':hover': {
                     textDecoration: 'underline',
                   }
                 },
@@ -163,7 +163,7 @@ const Login = () => {
                   border: '1px solid hsl(var(--border))',
                   fontSize: '1rem',
                   width: '100%',
-                  '&:focus': {
+                  ':focus': {
                     outline: 'none',
                     borderColor: '#FF4500',
                     boxShadow: '0 0 0 2px rgba(255, 69, 0, 0.1)',

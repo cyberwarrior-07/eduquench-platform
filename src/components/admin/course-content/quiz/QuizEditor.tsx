@@ -16,7 +16,7 @@ interface QuizQuestion {
 
 interface QuizEditorProps {
   quizId?: string;
-  onSave: (quizId: string) => void;  // Updated this line to expect a string parameter
+  onSave: (quizId: string) => void;
 }
 
 export function QuizEditor({ quizId, onSave }: QuizEditorProps) {
@@ -92,9 +92,12 @@ export function QuizEditor({ quizId, onSave }: QuizEditorProps) {
 
   const handleSave = async () => {
     try {
+      // If no quizId is provided, create a new one
+      const newQuizId = quizId || crypto.randomUUID();
+      
       const { error } = await supabase.from("quiz_questions").insert(
         questions.map((q) => ({
-          quiz_id: quizId,
+          quiz_id: newQuizId,
           question: q.question,
           options: q.options,
           correct_answer: q.correct_answer,
@@ -108,7 +111,9 @@ export function QuizEditor({ quizId, onSave }: QuizEditorProps) {
         title: "Success",
         description: "Quiz saved successfully",
       });
-      onSave();
+      
+      // Pass the quizId (either existing or new) to the parent component
+      onSave(newQuizId);
     } catch (error) {
       console.error("Error saving quiz:", error);
       toast({

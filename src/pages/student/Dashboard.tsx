@@ -177,15 +177,16 @@ export default function StudentDashboard() {
                     title: course.title,
                     description: course.description || '',
                     thumbnail: course.thumbnail_url || '/placeholder.svg',
-                    duration: '2 hours', // This should come from the course data
-                    lessons: 12, // This should come from the course data
-                    level: 'Beginner', // This should come from the course data
+                    duration: '2 hours',
+                    lessons: 12,
+                    level: 'Beginner',
+                    enrollmentStatus: 'Open',
                     progress: course.student_progress?.[0]?.progress || 0,
                     isLocked: false,
                     objectives: [],
                     requirements: [],
-                    instructor: 'John Doe', // This should come from the course data
-                    category: 'Development', // This should come from the course data
+                    instructor: 'John Doe',
+                    category: 'Development',
                   }}
                 />
               ))}

@@ -20,6 +20,7 @@ interface FormData {
   description: string;
   type: ContentType;
   content: Json;
+  quizId?: string; // Added this to handle quiz editing
 }
 
 interface AddContentFormProps {
@@ -37,6 +38,10 @@ export function AddContentForm({ onSubmit }: AddContentFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
+  };
+
+  const handleQuizSave = (quizId: string) => {
+    setFormData({ ...formData, quizId });
   };
 
   return (
@@ -86,10 +91,8 @@ export function AddContentForm({ onSubmit }: AddContentFormProps) {
 
       {formData.type === "quiz" && (
         <QuizEditor
-          quizId={formData.id}
-          onSave={() => {
-            // Handle quiz save
-          }}
+          quizId={formData.quizId}
+          onSave={handleQuizSave}
         />
       )}
 

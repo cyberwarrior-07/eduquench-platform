@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { Header } from '@/components/Header';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -52,28 +53,55 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md p-6 space-y-6">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold">Welcome to EduQuench</h2>
-          <p className="mt-2 text-gray-600">
-            Demo Credentials:<br />
-            Admin: admin@eduquench.com / admin123<br />
-            Student: student@eduquench.com / student123
-          </p>
-        </div>
-        <Auth
-          supabaseClient={supabase}
-          appearance={{ theme: ThemeSupa }}
-          providers={['google', 'github']}
-          theme="light"
-          socialLayout="horizontal"
-          providerScopes={{
-            google: 'profile email',
-            github: 'read:user user:email'
-          }}
-        />
-      </Card>
+    <div className="min-h-screen bg-gradient-to-b from-background to-secondary">
+      <Header />
+      <div className="container flex items-center justify-center min-h-[calc(100vh-3.5rem)] py-12 px-4 sm:px-6 lg:px-8">
+        <Card className="w-full max-w-md p-8 space-y-8 shadow-lg bg-white/50 backdrop-blur-sm">
+          <div className="text-center space-y-2">
+            <h2 className="text-3xl font-bold tracking-tight text-primary">Welcome to EduQuench</h2>
+            <p className="text-sm text-muted-foreground">
+              Sign in to your account to continue
+            </p>
+          </div>
+          
+          <div className="p-4 bg-primary-100 rounded-lg">
+            <p className="text-sm text-primary-800">
+              <strong>Demo Credentials:</strong><br />
+              Admin: admin@eduquench.com / admin123<br />
+              Student: student@eduquench.com / student123
+            </p>
+          </div>
+
+          <Auth
+            supabaseClient={supabase}
+            appearance={{
+              theme: ThemeSupa,
+              variables: {
+                default: {
+                  colors: {
+                    brand: '#FF4500',
+                    brandAccent: '#FF612F',
+                  },
+                },
+              },
+              className: {
+                container: 'w-full',
+                button: 'w-full px-4 py-2 rounded-md',
+                divider: 'my-4',
+                label: 'text-sm font-medium text-gray-700',
+                input: 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent',
+              },
+            }}
+            providers={['google', 'github']}
+            theme="light"
+            socialLayout="horizontal"
+            providerScopes={{
+              google: 'profile email',
+              github: 'read:user user:email'
+            }}
+          />
+        </Card>
+      </div>
     </div>
   );
 }

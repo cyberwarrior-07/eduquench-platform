@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
-import { Bell, LogOut } from "lucide-react";
+import { Bell, LogOut, LogIn } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -41,13 +41,13 @@ export const Header = () => {
       <div className="container flex h-14 items-center">
         <div className="mr-4 hidden md:flex">
           <Link to="/" className="mr-6 flex items-center space-x-2">
-            <span className="hidden font-bold sm:inline-block">
+            <span className="hidden font-bold sm:inline-block text-primary hover:text-primary/90 transition-colors">
               EduQuench
             </span>
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-          {user && (
+          {user ? (
             <>
               <Button
                 variant="ghost"
@@ -72,6 +72,13 @@ export const Header = () => {
                 </Button>
               </div>
             </>
+          ) : (
+            <Link to="/login">
+              <Button variant="outline" size="sm">
+                <LogIn className="h-4 w-4 mr-2" />
+                Sign In
+              </Button>
+            </Link>
           )}
         </div>
       </div>

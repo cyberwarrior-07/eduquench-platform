@@ -95,13 +95,35 @@ export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) =
 
     setIsTranscribing(true);
     try {
-      const { data, error } = await supabase.functions.invoke('transcribe-translate', {
-        body: { videoUrl, targetLanguage: selectedLanguage }
+      // First, get the transcription
+      const { data: transcriptionData, error: transcriptionError } = await supabase.functions.invoke('transcribe-video', {
+        body: { videoUrl }
       });
 
-      if (error) throw error;
+      if (transcriptionError) throw transcriptionError;
 
-      setTranscript(data.timestamps);
+      // Then, translate if needed
+      if (selectedLanguage !== 'en') {
+        const { data: translationData, error: translationError } = await supabase.functions.invoke('translate-text', {
+          body: { 
+            text: transcriptionData.transcription.map((t: any) => t.text).join('\n'),
+            targetLanguage: selectedLanguage 
+          }
+        });
+
+        if (translationError) throw translationError;
+
+        // Combine timing data with translated text
+        const translatedTranscript = transcriptionData.transcription.map((segment: any, index: number) => ({
+          ...segment,
+          text: translationData.translations[index]
+        }));
+
+        setTranscript(translatedTranscript);
+      } else {
+        setTranscript(transcriptionData.transcription);
+      }
+
       toast.success('Transcription completed');
     } catch (error) {
       console.error('Transcription error:', error);

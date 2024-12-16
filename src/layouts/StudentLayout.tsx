@@ -9,7 +9,7 @@ export function StudentLayout() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <SidebarProvider defaultOpen={true}>
-        <div className="flex-1 flex h-[calc(100vh-4rem)]">
+        <div className="flex-1 flex">
           <Sidebar 
             className="border-r border-gray-200 bg-white shadow-sm" 
             collapsible="icon"
@@ -18,8 +18,8 @@ export function StudentLayout() {
               <StudentSidebar />
             </SidebarContent>
           </Sidebar>
-          <SidebarInset className="flex-1 bg-gray-50 p-4 md:p-6 overflow-y-auto">
-            <div className="container mx-auto max-w-7xl">
+          <SidebarInset className="flex-1 bg-gray-50 overflow-y-auto">
+            <div className="min-h-[calc(100vh-4rem)]">
               <Outlet />
             </div>
           </SidebarInset>

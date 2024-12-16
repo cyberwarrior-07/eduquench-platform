@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from 'sonner';
+import { Progress } from './ui/progress';
 
 interface VideoPlayerProps {
   videoUrl: string;
@@ -147,16 +148,16 @@ export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) =
   }, [volume]);
 
   return (
-    <Card className="w-full bg-white shadow-sm">
-      <div className="relative aspect-video bg-gray-100">
+    <Card className="w-full bg-white shadow-sm overflow-hidden">
+      <div className="relative aspect-video bg-gray-900">
         <video
           ref={videoRef}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
           src={videoUrl}
           onTimeUpdate={handleTimeUpdate}
         />
         {instructor && (
-          <div className="absolute top-4 right-4 bg-white rounded-lg p-2 shadow-md">
+          <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-md">
             <img
               src={`https://api.dicebear.com/7.x/initials/svg?seed=${instructor}`}
               alt={instructor}
@@ -164,116 +165,108 @@ export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) =
             />
           </div>
         )}
-      </div>
-      <div className="p-4 space-y-4">
-        <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-          <div className="flex items-center gap-2">
-            <Select value={selectedLanguage} onValueChange={handleLanguageChange}>
-              <SelectTrigger className="w-[120px]">
-                <SelectValue placeholder="Language" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="es">Spanish</SelectItem>
-                <SelectItem value="fr">French</SelectItem>
-                <SelectItem value="de">German</SelectItem>
-                <SelectItem value="hi">Hindi</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleTranscribe}
-              disabled={isTranscribing}
-            >
-              <Languages className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-        <div className="space-y-2">
-          <div 
-            className="h-1 w-full bg-gray-200 rounded cursor-pointer"
-            onClick={(e) => {
-              if (videoRef.current) {
-                const rect = e.currentTarget.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const percentage = (x / rect.width) * 100;
-                videoRef.current.currentTime = (percentage / 100) * videoRef.current.duration;
-                setProgress(percentage);
-              }
-            }}
-          >
-            <div
-              className="h-full bg-primary rounded"
-              style={{ width: `${progress}%` }}
+        
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+          <div className="space-y-4">
+            <Progress 
+              value={progress} 
+              className="h-1 bg-white/20" 
+              indicatorClassName="bg-primary"
             />
-          </div>
-          <div className="flex justify-between items-center">
-            <div className="flex space-x-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={togglePlay}
-                className="hover:text-primary"
-              >
-                {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={handleRestart}
-                className="hover:text-primary"
-              >
-                <RotateCcw className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={toggleMute}
-                className="hover:text-primary"
-              >
-                {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-              </Button>
+            
+            <div className="flex justify-between items-center text-white">
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={togglePlay}
+                  className="hover:bg-white/10 text-white"
+                >
+                  {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={handleRestart}
+                  className="hover:bg-white/10 text-white"
+                >
+                  <RotateCcw className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={toggleMute}
+                  className="hover:bg-white/10 text-white"
+                >
+                  {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                </Button>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Select value={selectedLanguage} onValueChange={handleLanguageChange}>
+                  <SelectTrigger className="w-[120px] bg-white/10 border-white/20 text-white">
+                    <SelectValue placeholder="Language" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="en">English</SelectItem>
+                    <SelectItem value="es">Spanish</SelectItem>
+                    <SelectItem value="fr">French</SelectItem>
+                    <SelectItem value="de">German</SelectItem>
+                    <SelectItem value="hi">Hindi</SelectItem>
+                  </SelectContent>
+                </Select>
+                
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleTranscribe}
+                  disabled={isTranscribing}
+                  className="hover:bg-white/10 text-white"
+                >
+                  <Languages className="h-4 w-4" />
+                </Button>
+                
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={handleFullscreen}
+                  className="hover:bg-white/10 text-white"
+                >
+                  <Maximize2 className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={handleFullscreen}
-              className="hover:text-primary"
-            >
-              <Maximize2 className="h-4 w-4" />
-            </Button>
           </div>
         </div>
-        {transcript.length > 0 && (
-          <div className="mt-4 p-4 bg-muted/50 rounded-lg">
-            <h4 className="font-medium mb-2">Transcript</h4>
-            <div className="space-y-2 text-sm text-muted-foreground">
-              {transcript.map((segment, index) => (
-                <div
-                  key={index}
-                  className={cn(
-                    "p-2 rounded transition-colors",
-                    videoRef.current &&
-                    videoRef.current.currentTime >= segment.start &&
-                    videoRef.current.currentTime <= segment.end
-                      ? "bg-primary/10"
-                      : "hover:bg-muted"
-                  )}
-                  onClick={() => {
-                    if (videoRef.current) {
-                      videoRef.current.currentTime = segment.start;
-                    }
-                  }}
-                >
-                  {segment.text}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
+      
+      {transcript.length > 0 && (
+        <div className="p-4 space-y-2">
+          <h4 className="font-medium text-gray-900">Transcript</h4>
+          <div className="max-h-60 overflow-y-auto space-y-2">
+            {transcript.map((segment, index) => (
+              <div
+                key={index}
+                className={cn(
+                  "p-2 rounded-lg transition-colors cursor-pointer",
+                  videoRef.current &&
+                  videoRef.current.currentTime >= segment.start &&
+                  videoRef.current.currentTime <= segment.end
+                    ? "bg-primary/10"
+                    : "hover:bg-gray-100"
+                )}
+                onClick={() => {
+                  if (videoRef.current) {
+                    videoRef.current.currentTime = segment.start;
+                  }
+                }}
+              >
+                <p className="text-sm text-gray-600">{segment.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </Card>
   );
 };

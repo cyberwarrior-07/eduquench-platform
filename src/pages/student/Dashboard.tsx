@@ -3,16 +3,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, BookOpen, GraduationCap, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { DashboardStats } from "@/components/student/DashboardStats";
 import { LiveSessionsList } from "@/components/student/LiveSessionsList";
 import { EnrolledCourses } from "@/components/student/EnrolledCourses";
-import { Slider } from "@/components/ui/slider";
+import { Progress } from "@/components/ui/progress";
 
 export default function StudentDashboard() {
   const [date, setDate] = useState<Date | undefined>(new Date());
-  const [sliderValue, setSliderValue] = useState([50]);
+  const [progress, setProgress] = useState(50);
 
   const { data: profile } = useQuery({
     queryKey: ['user-profile'],
@@ -58,7 +58,7 @@ export default function StudentDashboard() {
     },
   });
 
-  const { data: upcomingLiveSessions, isLoading: sessionsLoading } = useQuery({
+  const { data: upcomingLiveSessions } = useQuery({
     queryKey: ['upcoming-live-sessions'],
     queryFn: async () => {
       console.log('Fetching upcoming live sessions...');
@@ -97,7 +97,7 @@ export default function StudentDashboard() {
   }
 
   return (
-    <div className="w-full min-h-screen p-4 md:p-6 space-y-6">
+    <div className="w-full min-h-[calc(100vh-5rem)] p-4 md:p-6 space-y-6 overflow-y-auto">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900">
           Hello, {profile?.username || 'Student'}! 👋
@@ -105,9 +105,25 @@ export default function StudentDashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <DashboardStats courses={courses || []} />
+        <Card className="col-span-full md:col-span-2 bg-white border border-gray-100 shadow-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-gray-900">
+              <BookOpen className="h-5 w-5" />
+              Learning Progress
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <Progress value={progress} className="w-full h-2" />
+              <div className="flex justify-between text-sm text-gray-600">
+                <span>Overall Progress</span>
+                <span>{progress}%</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-        <Card className="col-span-1 bg-white border border-gray-100 shadow-sm">
+        <Card className="col-span-full md:col-span-1 bg-white border border-gray-100 shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-gray-900">
               <CalendarIcon className="h-5 w-5" />
@@ -124,24 +140,29 @@ export default function StudentDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="col-span-1 bg-white border border-gray-100 shadow-sm">
+        <Card className="col-span-full bg-white border border-gray-100 shadow-sm">
           <CardHeader>
-            <CardTitle className="text-gray-900">Overall Progress</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-gray-900">
+              <GraduationCap className="h-5 w-5" />
+              Enrolled Courses
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <Slider
-              defaultValue={sliderValue}
-              max={100}
-              step={1}
-              onValueChange={setSliderValue}
-              className="w-full"
-            />
-            <p className="text-center mt-2 text-gray-600">{sliderValue}%</p>
+            <EnrolledCourses courses={courses || []} />
           </CardContent>
         </Card>
 
-        <LiveSessionsList sessions={upcomingLiveSessions || []} />
-        <EnrolledCourses courses={courses || []} />
+        <Card className="col-span-full bg-white border border-gray-100 shadow-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-gray-900">
+              <Clock className="h-5 w-5" />
+              Upcoming Live Sessions
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <LiveSessionsList sessions={upcomingLiveSessions || []} />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

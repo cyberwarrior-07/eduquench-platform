@@ -6,12 +6,15 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
+import { Json } from "@/integrations/supabase/types";
 
 interface APIIntegration {
   id: string;
   service_name: string;
-  config: Record<string, string>;
-  is_active: boolean;
+  config: Json;  // Updated to use Json type from Supabase
+  is_active: boolean | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export default function APISettings() {

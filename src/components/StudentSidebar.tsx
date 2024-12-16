@@ -61,11 +61,11 @@ export function StudentSidebar() {
       "relative h-full bg-white transition-all duration-300 ease-in-out",
       isCollapsed ? "w-16" : "w-64"
     )}>
-      <div className="flex items-center justify-between p-4">
+      <div className="flex items-center justify-between p-4 border-b">
         <Button
-          variant="ghost"
-          size="icon"
-          className="h-6 w-6"
+          variant="outline"
+          size="sm"
+          className="flex items-center gap-2"
           onClick={() => setIsCollapsed(!isCollapsed)}
         >
           <ChevronLeft
@@ -74,12 +74,13 @@ export function StudentSidebar() {
               isCollapsed ? "rotate-180" : "rotate-0"
             )}
           />
+          {!isCollapsed && <span>Collapse</span>}
         </Button>
         {!isCollapsed && (
           <Button
             variant="ghost"
             size="icon"
-            className="h-6 w-6"
+            className="h-8 w-8"
             onClick={toggleFullScreen}
           >
             {isFullScreen ? (
@@ -92,7 +93,7 @@ export function StudentSidebar() {
       </div>
       
       <ScrollArea className="h-[calc(100%-4rem)] px-3">
-        <nav className="space-y-1">
+        <nav className="space-y-1 py-4">
           {links.map((link) => (
             <NavLink
               key={link.href}

@@ -23,8 +23,15 @@ export default function Login() {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log('Auth state changed:', _event, session);
-      handleAuthChange(session);
+      console.log('Auth state changed:', _event);
+      console.log('Session data:', session);
+      if (_event === 'SIGNED_IN') {
+        console.log('User signed in successfully');
+        handleAuthChange(session);
+      } else if (_event === 'SIGNED_OUT') {
+        console.log('User signed out');
+        navigate('/login');
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -44,7 +51,7 @@ export default function Login() {
 
         if (profileError) {
           console.error('Error fetching profile:', profileError);
-          toast.error('Error fetching user profile');
+          toast.error('Error fetching user profile. Please try again.');
           return;
         }
 
@@ -53,15 +60,20 @@ export default function Login() {
         if (profile) {
           // Redirect based on role
           if (profile.role === 'admin') {
+            console.log('Redirecting to admin dashboard');
             navigate('/admin');
           } else {
+            console.log('Redirecting to user dashboard');
             navigate('/dashboard');
           }
           toast.success('Successfully logged in');
+        } else {
+          console.error('No profile found for user');
+          toast.error('User profile not found. Please contact support.');
         }
       } catch (error) {
         console.error('Error in auth change:', error);
-        toast.error('Error during authentication');
+        toast.error('Authentication error. Please try again.');
       }
     }
   };

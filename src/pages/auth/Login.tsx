@@ -14,7 +14,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Handle auth state changes
+    // Handle auth state changes and errors
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('Auth state changed:', event, session);
       
@@ -31,17 +31,17 @@ const Login = () => {
         console.log('User signed out');
       }
 
-      setIsLoading(false);
-    });
+      // Handle auth errors
+      if (event === 'USER_DELETED' || event === 'PASSWORD_RECOVERY') {
+        console.error('Auth event error:', event);
+        toast({
+          variant: "destructive",
+          title: "Authentication Error",
+          description: `Error during authentication: ${event}`,
+        });
+      }
 
-    // Handle auth errors
-    const { data: { subscription: errorSubscription } } = supabase.auth.onError((error) => {
-      console.error('Auth error:', error);
-      toast({
-        variant: "destructive",
-        title: "Authentication Error",
-        description: error.message,
-      });
+      setIsLoading(false);
     });
 
     // Check initial session
@@ -55,9 +55,8 @@ const Login = () => {
     });
 
     return () => {
-      console.log('Cleaning up auth subscriptions');
+      console.log('Cleaning up auth subscription');
       subscription.unsubscribe();
-      errorSubscription.unsubscribe();
     };
   }, [navigate, toast]);
 

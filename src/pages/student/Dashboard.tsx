@@ -97,7 +97,7 @@ export default function StudentDashboard() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">
           Hello, {profile?.username || 'Student'}! 👋
@@ -107,7 +107,7 @@ export default function StudentDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <DashboardStats courses={courses || []} />
 
-        <Card>
+        <Card className="col-span-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CalendarIcon className="h-5 w-5" />
@@ -124,7 +124,7 @@ export default function StudentDashboard() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="col-span-1">
           <CardHeader>
             <CardTitle>Overall Progress</CardTitle>
           </CardHeader>

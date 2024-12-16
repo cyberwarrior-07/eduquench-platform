@@ -7,12 +7,15 @@ import {
   Users,
   Settings,
   Database,
+  ChevronLeft,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { useState } from "react";
+import { ScrollArea } from "./ui/scroll-area";
 
 const navigation = [
-  { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+  { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'CMS Pages', href: '/admin/pages', icon: FileText },
   { name: 'Courses', href: '/admin/courses', icon: GraduationCap },
   { name: 'Users', href: '/admin/users', icon: Users },
@@ -21,49 +24,90 @@ const navigation = [
 
 export function AdminSidebar() {
   const location = useLocation();
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <div className="flex h-screen w-64 flex-col gap-y-5 border-r bg-white p-5">
-      <Link to="/admin" className="flex items-center gap-2">
-        <span className="text-xl font-bold text-primary">ADMIN CMS</span>
-      </Link>
+    <div
+      className={cn(
+        "relative flex flex-col h-full border-r bg-background",
+        isCollapsed ? "w-16" : "w-64"
+      )}
+    >
+      <div className="absolute inset-y-0 right-0 flex items-center">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="-right-4 z-10 rounded-full border shadow-md bg-background"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+        >
+          <ChevronLeft
+            className={cn(
+              "h-4 w-4 transition-all",
+              isCollapsed ? "rotate-180" : "rotate-0"
+            )}
+          />
+        </Button>
+      </div>
 
-      <div className="flex items-center gap-3 rounded-lg border bg-gray-50 p-3">
+      <div className="p-4">
+        <Link to="/admin" className="flex items-center gap-2">
+          <span className={cn(
+            "text-xl font-bold text-primary transition-all",
+            isCollapsed ? "hidden" : "block"
+          )}>
+            ADMIN CMS
+          </span>
+        </Link>
+      </div>
+
+      <div className={cn(
+        "flex items-center gap-3 mx-4 rounded-lg border bg-gray-50 p-3",
+        isCollapsed ? "justify-center" : ""
+      )}>
         <Avatar>
           <AvatarImage src="/placeholder.svg" />
           <AvatarFallback>AD</AvatarFallback>
         </Avatar>
-        <div className="flex flex-col">
-          <span className="font-medium text-gray-900">Admin</span>
-          <span className="text-sm text-gray-500">Administrator</span>
-        </div>
+        {!isCollapsed && (
+          <div className="flex flex-col">
+            <span className="font-medium text-gray-900">Admin</span>
+            <span className="text-sm text-gray-500">Administrator</span>
+          </div>
+        )}
       </div>
 
-      <nav className="flex flex-1 flex-col gap-1">
-        {navigation.map((item) => (
-          <Button
-            key={item.name}
-            variant={location.pathname === item.href ? "secondary" : "ghost"}
-            className={cn(
-              "justify-start gap-2",
-              location.pathname === item.href
-                ? "bg-primary text-white hover:bg-primary-700"
-                : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-            )}
-            asChild
-          >
-            <Link to={item.href}>
+      <ScrollArea className="flex-1 p-4">
+        <div className="space-y-2">
+          {navigation.map((item) => (
+            <Link
+              key={item.href}
+              to={item.href}
+              className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
+                location.pathname === item.href
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
+            >
               <item.icon className="h-4 w-4" />
-              {item.name}
+              {!isCollapsed && <span>{item.name}</span>}
             </Link>
-          </Button>
-        ))}
-      </nav>
+          ))}
+        </div>
+      </ScrollArea>
 
-      <Button variant="ghost" className="justify-start gap-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900">
-        <Settings className="h-4 w-4" />
-        Settings
-      </Button>
+      <div className="p-4">
+        <Button
+          variant="ghost"
+          className={cn(
+            "w-full justify-start gap-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900",
+            isCollapsed && "justify-center"
+          )}
+        >
+          <Settings className="h-4 w-4" />
+          {!isCollapsed && "Settings"}
+        </Button>
+      </div>
     </div>
   );
 }

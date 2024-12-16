@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 import { Bell, LogOut } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useState, useEffect } from "react";
-import { toast } from "./ui/use-toast";
+import { toast } from "sonner";
 
 export const Header = () => {
   const [user, setUser] = useState(null);
@@ -28,9 +28,9 @@ export const Header = () => {
       setLoading(true);
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      toast.success('Successfully signed out');
+      toast('Successfully signed out');
     } catch (error) {
-      toast.error('Error signing out');
+      toast('Error signing out');
     } finally {
       setLoading(false);
     }

@@ -10,17 +10,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { QuizEditor } from "./quiz/QuizEditor";
+import { VideoContentForm } from "../courses/form/content-types/VideoContentForm";
+import { QuizContentForm } from "../courses/form/content-types/QuizContentForm";
+import { ChapterContentForm } from "../courses/form/content-types/ChapterContentForm";
+import { LessonContentForm } from "../courses/form/content-types/LessonContentForm";
 import { Json } from "@/integrations/supabase/types";
 
-export type ContentType = "video" | "quiz" | "assignment" | "live";
+export type ContentType = "video" | "quiz" | "chapter" | "lesson";
 
 interface FormData {
   title: string;
   description: string;
   type: ContentType;
   content: Json;
-  quizId?: string;
 }
 
 interface AddContentFormProps {
@@ -40,8 +42,43 @@ export function AddContentForm({ onSubmit }: AddContentFormProps) {
     onSubmit(formData);
   };
 
-  const handleQuizSave = (quizId: string) => {
-    setFormData({ ...formData, quizId });
+  const handleContentChange = (content: any) => {
+    setFormData({ ...formData, content });
+  };
+
+  const renderContentForm = () => {
+    switch (formData.type) {
+      case "video":
+        return (
+          <VideoContentForm
+            value={formData.content}
+            onChange={handleContentChange}
+          />
+        );
+      case "quiz":
+        return (
+          <QuizContentForm
+            value={formData.content}
+            onChange={handleContentChange}
+          />
+        );
+      case "chapter":
+        return (
+          <ChapterContentForm
+            value={formData.content}
+            onChange={handleContentChange}
+          />
+        );
+      case "lesson":
+        return (
+          <LessonContentForm
+            value={formData.content}
+            onChange={handleContentChange}
+          />
+        );
+      default:
+        return null;
+    }
   };
 
   return (
@@ -74,7 +111,7 @@ export function AddContentForm({ onSubmit }: AddContentFormProps) {
         <Select
           value={formData.type}
           onValueChange={(value: ContentType) =>
-            setFormData({ ...formData, type: value })
+            setFormData({ ...formData, type: value, content: {} })
           }
         >
           <SelectTrigger>
@@ -83,18 +120,13 @@ export function AddContentForm({ onSubmit }: AddContentFormProps) {
           <SelectContent>
             <SelectItem value="video">Video</SelectItem>
             <SelectItem value="quiz">Quiz</SelectItem>
-            <SelectItem value="assignment">Assignment</SelectItem>
-            <SelectItem value="live">Live Session</SelectItem>
+            <SelectItem value="chapter">Chapter</SelectItem>
+            <SelectItem value="lesson">Lesson</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      {formData.type === "quiz" && (
-        <QuizEditor
-          quizId={formData.quizId}
-          onSave={handleQuizSave}
-        />
-      )}
+      {renderContentForm()}
 
       <Button type="submit">Add Content</Button>
     </form>

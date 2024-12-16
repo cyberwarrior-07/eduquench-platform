@@ -19,13 +19,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CourseContentList } from "@/components/admin/CourseContentList";
 import { LiveSessionList } from "@/components/admin/LiveSessionList";
 
+interface CourseFormData {
+  title: string;
+  description: string;
+  price: string;
+  currency: string;
+  is_published: boolean;
+}
+
 export default function CourseForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const isEditing = !!id;
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<CourseFormData>({
     title: "",
     description: "",
     price: "",
@@ -47,30 +55,43 @@ export default function CourseForm() {
       return data;
     },
     enabled: isEditing,
-    onSuccess: (data) => {
-      if (data) {
-        setFormData({
-          title: data.title,
-          description: data.description || "",
-          price: data.price?.toString() || "",
-          currency: data.currency || "INR",
-          is_published: data.is_published || false,
-        });
+    meta: {
+      onSuccess: (data: any) => {
+        if (data) {
+          setFormData({
+            title: data.title,
+            description: data.description || "",
+            price: data.price?.toString() || "",
+            currency: data.currency || "INR",
+            is_published: data.is_published || false,
+          });
+        }
       }
-    },
+    }
   });
 
   const mutation = useMutation({
-    mutationFn: async (data: typeof formData) => {
-      const { error } = await supabase
-        .from('courses')
-        [isEditing ? 'update' : 'insert']({
-          ...data,
-          price: data.price ? parseFloat(data.price) : null,
-        })
-        [isEditing ? 'eq' : 'select']('id', id);
-      
-      if (error) throw error;
+    mutationFn: async (data: CourseFormData) => {
+      if (isEditing) {
+        const { error } = await supabase
+          .from('courses')
+          .update({
+            ...data,
+            price: data.price ? parseFloat(data.price) : null,
+          })
+          .eq('id', id);
+        
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('courses')
+          .insert({
+            ...data,
+            price: data.price ? parseFloat(data.price) : null,
+          });
+        
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-courses'] });

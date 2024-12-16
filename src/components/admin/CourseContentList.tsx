@@ -26,10 +26,19 @@ interface CourseContentListProps {
   courseId: string;
 }
 
+type ContentType = "video" | "quiz" | "assignment" | "live";
+
+interface FormData {
+  title: string;
+  description: string;
+  type: ContentType;
+  content: Record<string, unknown>;
+}
+
 export function CourseContentList({ courseId }: CourseContentListProps) {
   const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     title: "",
     description: "",
     type: "video",
@@ -51,12 +60,15 @@ export function CourseContentList({ courseId }: CourseContentListProps) {
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: typeof formData) => {
+    mutationFn: async (data: FormData) => {
       const { error } = await supabase
         .from('course_content')
         .insert({
-          ...data,
           course_id: courseId,
+          title: data.title,
+          description: data.description,
+          type: data.type,
+          content: data.content,
           order_index: contents?.length || 0,
         });
       

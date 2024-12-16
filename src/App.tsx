@@ -14,6 +14,7 @@ import Resources from "./pages/Resources";
 import Schedule from "./pages/Schedule";
 import Quizzes from "./pages/Quizzes";
 import LiveSessions from "./pages/student/LiveSessions";
+import Login from "./pages/auth/Login";
 import { SessionContextProvider } from '@supabase/auth-helpers-react';
 import { supabase } from "./integrations/supabase/client";
 import { Toaster } from "sonner";
@@ -64,6 +65,9 @@ function App() {
             <Route path="/" element={<Index />} />
             <Route path="/courses" element={<Courses />} />
           </Route>
+          
+          {/* Auth routes */}
+          <Route path="/login" element={<Login />} />
           
           {/* Student routes - wrapped with StudentLayout */}
           <Route element={<StudentLayout />}>

@@ -146,7 +146,11 @@ const Login = () => {
             },
           }}
           providers={['google']}
-          redirectTo={`${window.location.origin}/dashboard`}
+          redirectTo={window.location.origin}
+          onError={(error) => {
+            console.error('Auth error:', error);
+            toast.error('Authentication error. Please try again.');
+          }}
           theme="light"
         />
       </div>

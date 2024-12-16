@@ -1,72 +1,56 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { 
-  BookOpen, 
-  ClipboardList,
-  Calendar,
-  LayoutDashboard,
+import {
+  BookOpen,
+  FileText,
   MessageSquare,
-  Settings,
-  FolderOpen,
+  Calendar,
+  Library,
+  Video,
   GraduationCap,
+  Clock
 } from "lucide-react";
-import { Button } from "./ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Courses', href: '/courses', icon: GraduationCap },
-  { name: 'Assignments', href: '/assignments', icon: ClipboardList },
-  { name: 'Schedule', href: '/schedule', icon: Calendar },
-  { name: 'Mentor Support', href: '/discussions', icon: MessageSquare },
-  { name: 'Resources', href: '/resources', icon: FolderOpen },
-];
-
-export function StudentSidebar() {
+export const StudentSidebar = () => {
   const location = useLocation();
 
-  return (
-    <div className="flex h-screen w-64 flex-col gap-y-5 border-r bg-white p-5">
-      <Link to="/" className="flex items-center gap-2">
-        <span className="text-xl font-bold text-gray-900">DESIGNO</span>
-      </Link>
+  const isActive = (path: string) => location.pathname === path;
 
-      <div className="flex items-center gap-3 rounded-lg border bg-gray-50 p-3">
-        <Avatar>
-          <AvatarImage src="/placeholder.svg" />
-          <AvatarFallback>HS</AvatarFallback>
-        </Avatar>
-        <div className="flex flex-col">
-          <span className="font-medium text-gray-900">Harsh</span>
-          <span className="text-sm text-gray-500">Student</span>
+  const links = [
+    { href: "/dashboard", label: "Dashboard", icon: GraduationCap },
+    { href: "/course-content", label: "Course Content", icon: BookOpen },
+    { href: "/assignments", label: "Assignments", icon: FileText },
+    { href: "/discussions", label: "Discussions", icon: MessageSquare },
+    { href: "/schedule", label: "Schedule", icon: Calendar },
+    { href: "/resources", label: "Resources", icon: Library },
+    { href: "/live-sessions", label: "Live Sessions", icon: Video },
+    { href: "/quizzes", label: "Quizzes", icon: Clock },
+  ];
+
+  return (
+    <div className="pb-12 w-full">
+      <div className="space-y-4 py-4">
+        <div className="px-3 py-2">
+          <div className="space-y-1">
+            {links.map((link) => {
+              const Icon = link.icon;
+              return (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  className={cn(
+                    "flex items-center rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors",
+                    isActive(link.href) ? "bg-accent text-accent-foreground" : "text-muted-foreground"
+                  )}
+                >
+                  <Icon className="mr-2 h-4 w-4" />
+                  {link.label}
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </div>
-
-      <nav className="flex flex-1 flex-col gap-1">
-        {navigation.map((item) => (
-          <Button
-            key={item.name}
-            variant={location.pathname === item.href ? "secondary" : "ghost"}
-            className={cn(
-              "justify-start gap-2",
-              location.pathname === item.href
-                ? "bg-primary text-white hover:bg-primary-700"
-                : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-            )}
-            asChild
-          >
-            <Link to={item.href}>
-              <item.icon className="h-4 w-4" />
-              {item.name}
-            </Link>
-          </Button>
-        ))}
-      </nav>
-
-      <Button variant="ghost" className="justify-start gap-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900">
-        <Settings className="h-4 w-4" />
-        Settings
-      </Button>
     </div>
   );
-}
+};

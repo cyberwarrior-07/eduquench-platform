@@ -48,6 +48,16 @@ export const Header = () => {
               EduQuench
             </span>
           </Link>
+          {user && (
+            <nav className="hidden md:flex items-center space-x-6">
+              <Link to="/courses" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                Courses
+              </Link>
+              <Link to="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                Dashboard
+              </Link>
+            </nav>
+          )}
         </div>
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           {user ? (

@@ -11,12 +11,12 @@ export function StudentLayout() {
       <div className="flex-1 flex">
         <SidebarProvider defaultOpen={true}>
           <div className="flex w-full">
-            <Sidebar className="flex-shrink-0 bg-white border-r" collapsible="icon">
+            <Sidebar className="flex-shrink-0 bg-white border-r transition-all duration-300" collapsible="icon">
               <SidebarContent>
                 <StudentSidebar />
               </SidebarContent>
             </Sidebar>
-            <SidebarInset className="flex-1 p-4 md:p-6 w-full overflow-x-hidden bg-white">
+            <SidebarInset className="flex-1 p-4 md:p-6 w-full overflow-x-hidden bg-white transition-all duration-300">
               <div className="container mx-auto max-w-7xl">
                 <Outlet />
               </div>

@@ -22,7 +22,7 @@ export function StudentSidebar() {
       href: "/dashboard",
     },
     {
-      title: "Courses",
+      title: "Available Courses",
       icon: BookOpen,
       href: "/courses",
     },
@@ -46,7 +46,7 @@ export function StudentSidebar() {
   return (
     <div
       className={cn(
-        "relative flex flex-col h-full border-r bg-background",
+        "relative flex flex-col h-full border-r bg-background transition-all duration-300",
         isCollapsed ? "w-16" : "w-64"
       )}
     >

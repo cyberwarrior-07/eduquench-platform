@@ -11,7 +11,7 @@ import {
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { ScrollArea } from "./ui/scroll-area";
-import { useSidebarContext } from "./ui/sidebar";
+import { useSidebar } from "./ui/sidebar";
 
 const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
@@ -23,7 +23,8 @@ const navigation = [
 
 export function AdminSidebar() {
   const location = useLocation();
-  const { collapsed } = useSidebarContext();
+  const { state } = useSidebar();
+  const collapsed = state === "collapsed";
 
   return (
     <div className="flex flex-col h-full">

@@ -78,6 +78,9 @@ const Login = () => {
         console.log('User signed out');
       } else if (event === 'USER_UPDATED') {
         console.log('User updated');
+      } else if (event === 'USER_DELETED') {
+        console.log('User deleted');
+        toast.error('Authentication error occurred');
       }
     });
 
@@ -147,10 +150,6 @@ const Login = () => {
           }}
           providers={['google']}
           redirectTo={window.location.origin}
-          onError={(error) => {
-            console.error('Auth error:', error);
-            toast.error('Authentication error. Please try again.');
-          }}
           theme="light"
         />
       </div>

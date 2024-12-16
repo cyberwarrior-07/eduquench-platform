@@ -123,7 +123,7 @@ export default function Login() {
                 message: 'text-sm text-red-500',
               },
             }}
-            providers={[]}
+            providers={['google', 'github']}
             theme="light"
           />
         </Card>

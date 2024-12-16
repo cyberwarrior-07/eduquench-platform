@@ -421,7 +421,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      content_type: "video" | "quiz" | "assignment" | "live"
+      content_type: "video" | "quiz" | "chapter" | "lesson"
       user_role: "student" | "mentor" | "admin"
     }
     CompositeTypes: {

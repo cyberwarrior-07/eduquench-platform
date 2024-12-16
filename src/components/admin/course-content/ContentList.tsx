@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Video, FileText, GraduationCap, Trash2 } from "lucide-react";
+import { Video, FileText, BookOpen, Trash2, Folder } from "lucide-react";
 import { ContentType } from "./AddContentForm";
 
 interface Content {
@@ -21,8 +21,10 @@ export function ContentList({ contents, onDelete }: ContentListProps) {
         return <Video className="h-4 w-4" />;
       case "quiz":
         return <FileText className="h-4 w-4" />;
-      case "assignment":
-        return <GraduationCap className="h-4 w-4" />;
+      case "chapter":
+        return <Folder className="h-4 w-4" />;
+      case "lesson":
+        return <BookOpen className="h-4 w-4" />;
       default:
         return null;
     }
@@ -37,7 +39,7 @@ export function ContentList({ contents, onDelete }: ContentListProps) {
         >
           <div className="flex items-center gap-4">
             <div className="bg-gray-100 p-2 rounded-full">
-              {getContentIcon(content.type as ContentType)}
+              {getContentIcon(content.type)}
             </div>
             <div>
               <h3 className="font-medium">{content.title}</h3>

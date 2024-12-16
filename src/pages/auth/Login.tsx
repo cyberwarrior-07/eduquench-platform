@@ -67,22 +67,14 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary">
+    <div className="min-h-screen bg-gradient-to-b from-primary-100 via-background to-secondary">
       <Header />
       <div className="container flex items-center justify-center min-h-[calc(100vh-3.5rem)] py-12 px-4 sm:px-6 lg:px-8">
-        <Card className="w-full max-w-md p-8 space-y-8 shadow-lg bg-white/50 backdrop-blur-sm">
+        <Card className="w-full max-w-md p-8 space-y-8 shadow-xl bg-white/95 backdrop-blur-sm border-primary/10">
           <div className="text-center space-y-2">
             <h2 className="text-3xl font-bold tracking-tight text-primary">Welcome to EduQuench</h2>
             <p className="text-sm text-muted-foreground">
-              Sign in to your account to continue
-            </p>
-          </div>
-          
-          <div className="p-4 bg-primary-100 rounded-lg">
-            <p className="text-sm text-primary-800">
-              <strong>Demo Credentials:</strong><br />
-              Email: demo@eduquench.com<br />
-              Password: demo123
+              Sign in to your account to continue learning
             </p>
           </div>
 
@@ -95,15 +87,28 @@ export default function Login() {
                   colors: {
                     brand: '#FF4500',
                     brandAccent: '#FF612F',
+                    brandButtonText: 'white',
+                    defaultButtonBackground: '#F8FAFC',
+                    defaultButtonBackgroundHover: '#F1F5F9',
+                    inputBackground: 'white',
+                    inputBorder: '#E2E8F0',
+                    inputBorderHover: '#FF4500',
+                    inputBorderFocus: '#FF4500',
+                  },
+                  borderRadii: {
+                    borderRadiusButton: '0.5rem',
+                    buttonBorderRadius: '0.5rem',
+                    inputBorderRadius: '0.5rem',
                   },
                 },
               },
               className: {
                 container: 'w-full',
-                button: 'w-full px-4 py-2 rounded-md',
-                divider: 'my-4',
+                button: 'w-full px-4 py-2.5 rounded-lg font-medium transition-colors',
+                divider: 'my-6',
                 label: 'text-sm font-medium text-gray-700',
-                input: 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent',
+                input: 'w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent',
+                message: 'text-sm text-red-500',
               },
             }}
             providers={[]}

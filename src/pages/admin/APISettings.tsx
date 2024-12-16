@@ -1,28 +1,14 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
-import { Json } from "@/integrations/supabase/types";
-
-interface APIIntegration {
-  id: string;
-  service_name: string;
-  config: Json;  // Updated to use Json type from Supabase
-  is_active: boolean | null;
-  created_at: string;
-  updated_at: string;
-}
+import { APIIntegration } from "@/types/api";
+import { APIIntegrationCard } from "@/components/admin/APIIntegrationCard";
 
 export default function APISettings() {
   const [isLoading, setIsLoading] = useState(false);
   const [integrations, setIntegrations] = useState<APIIntegration[]>([]);
   const { toast } = useToast();
 
-  // Fetch existing integrations
   const fetchIntegrations = async () => {
     try {
       const { data, error } = await supabase
@@ -41,7 +27,6 @@ export default function APISettings() {
     }
   };
 
-  // Save API configuration
   const saveConfiguration = async (serviceName: string, config: Record<string, string>) => {
     setIsLoading(true);
     try {
@@ -73,7 +58,6 @@ export default function APISettings() {
     }
   };
 
-  // Toggle API status
   const toggleAPIStatus = async (integration: APIIntegration) => {
     try {
       const { error } = await supabase
@@ -99,6 +83,49 @@ export default function APISettings() {
     }
   };
 
+  const apiIntegrations = [
+    {
+      title: "Google Speech to Text",
+      description: "Convert audio to text using Google's Speech-to-Text API",
+      fields: [
+        { key: "api_key", label: "API Key" },
+        { key: "project_id", label: "Project ID" }
+      ]
+    },
+    {
+      title: "Google Translate",
+      description: "Translate content across multiple languages",
+      fields: [
+        { key: "api_key", label: "API Key" },
+        { key: "project_id", label: "Project ID" }
+      ]
+    },
+    {
+      title: "Google Search Console",
+      description: "Monitor your site's presence in Google Search results",
+      fields: [
+        { key: "api_key", label: "API Key" },
+        { key: "site_url", label: "Site URL" }
+      ]
+    },
+    {
+      title: "Google Meet",
+      description: "Create and manage video meetings",
+      fields: [
+        { key: "client_id", label: "Client ID" },
+        { key: "client_secret", label: "Client Secret" }
+      ]
+    },
+    {
+      title: "Zoom",
+      description: "Create and manage video conferences",
+      fields: [
+        { key: "api_key", label: "API Key" },
+        { key: "api_secret", label: "API Secret" }
+      ]
+    }
+  ];
+
   return (
     <div className="container mx-auto py-8 space-y-8">
       <div className="flex flex-col gap-4">
@@ -109,119 +136,15 @@ export default function APISettings() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        {/* Google Speech to Text */}
-        <APIIntegrationCard
-          title="Google Speech to Text"
-          description="Convert audio to text using Google's Speech-to-Text API"
-          fields={[
-            { key: "api_key", label: "API Key" },
-            { key: "project_id", label: "Project ID" }
-          ]}
-          onSave={saveConfiguration}
-          isLoading={isLoading}
-        />
-
-        {/* Google Translate */}
-        <APIIntegrationCard
-          title="Google Translate"
-          description="Translate content across multiple languages"
-          fields={[
-            { key: "api_key", label: "API Key" },
-            { key: "project_id", label: "Project ID" }
-          ]}
-          onSave={saveConfiguration}
-          isLoading={isLoading}
-        />
-
-        {/* Google Search Console */}
-        <APIIntegrationCard
-          title="Google Search Console"
-          description="Monitor your site's presence in Google Search results"
-          fields={[
-            { key: "api_key", label: "API Key" },
-            { key: "site_url", label: "Site URL" }
-          ]}
-          onSave={saveConfiguration}
-          isLoading={isLoading}
-        />
-
-        {/* Google Meet */}
-        <APIIntegrationCard
-          title="Google Meet"
-          description="Create and manage video meetings"
-          fields={[
-            { key: "client_id", label: "Client ID" },
-            { key: "client_secret", label: "Client Secret" }
-          ]}
-          onSave={saveConfiguration}
-          isLoading={isLoading}
-        />
-
-        {/* Zoom */}
-        <APIIntegrationCard
-          title="Zoom"
-          description="Create and manage video conferences"
-          fields={[
-            { key: "api_key", label: "API Key" },
-            { key: "api_secret", label: "API Secret" }
-          ]}
-          onSave={saveConfiguration}
-          isLoading={isLoading}
-        />
+        {apiIntegrations.map((integration) => (
+          <APIIntegrationCard
+            key={integration.title}
+            {...integration}
+            onSave={saveConfiguration}
+            isLoading={isLoading}
+          />
+        ))}
       </div>
     </div>
-  );
-}
-
-interface APIIntegrationCardProps {
-  title: string;
-  description: string;
-  fields: Array<{ key: string; label: string }>;
-  onSave: (serviceName: string, config: Record<string, string>) => Promise<void>;
-  isLoading: boolean;
-}
-
-function APIIntegrationCard({ title, description, fields, onSave, isLoading }: APIIntegrationCardProps) {
-  const [config, setConfig] = useState<Record<string, string>>({});
-
-  const handleSave = () => {
-    onSave(title, config);
-  };
-
-  return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>{title}</CardTitle>
-            <CardDescription>{description}</CardDescription>
-          </div>
-          <Switch />
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {fields.map((field) => (
-          <div key={field.key} className="space-y-2">
-            <label htmlFor={field.key} className="text-sm font-medium">
-              {field.label}
-            </label>
-            <Input
-              id={field.key}
-              type="password"
-              value={config[field.key] || ''}
-              onChange={(e) => setConfig({ ...config, [field.key]: e.target.value })}
-            />
-          </div>
-        ))}
-        <Button 
-          onClick={handleSave} 
-          className="w-full"
-          disabled={isLoading}
-        >
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Save Configuration
-        </Button>
-      </CardContent>
-    </Card>
   );
 }

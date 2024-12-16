@@ -95,7 +95,7 @@ export default function Login() {
                     inputBorderHover: '#FF4500',
                     inputBorderFocus: '#FF4500',
                   },
-                  borderRadii: {
+                  radii: {
                     borderRadiusButton: '0.5rem',
                     buttonBorderRadius: '0.5rem',
                     inputBorderRadius: '0.5rem',

@@ -27,21 +27,26 @@ export default function Login() {
 
   const handleAuthChange = async (session: any) => {
     if (session) {
-      // Get user role from profiles
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', session.user.id)
-        .single();
+      try {
+        // Get user role from profiles
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
 
-      if (profile) {
-        // Redirect based on role
-        if (profile.role === 'admin') {
-          navigate('/admin');
-        } else {
-          navigate('/dashboard');
+        if (profile) {
+          // Redirect based on role
+          if (profile.role === 'admin') {
+            navigate('/admin');
+          } else {
+            navigate('/dashboard');
+          }
+          toast('Successfully logged in');
         }
-        toast.success('Successfully logged in');
+      } catch (error) {
+        console.error('Error fetching user role:', error);
+        toast('Error fetching user role');
       }
     }
   };

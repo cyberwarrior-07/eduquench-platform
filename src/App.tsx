@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Sidebar, SidebarContent, SidebarInset } from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { StudentSidebar } from "@/components/StudentSidebar";
 import { AdminSidebar } from "@/components/AdminSidebar";
 import { Header } from "@/components/Header";
@@ -32,14 +32,16 @@ function StudentLayout() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <div className="flex-1 flex">
-        <Sidebar>
-          <SidebarContent>
-            <StudentSidebar />
-          </SidebarContent>
-        </Sidebar>
-        <SidebarInset className="flex-1 p-6">
-          <Outlet />
-        </SidebarInset>
+        <SidebarProvider>
+          <Sidebar>
+            <SidebarContent>
+              <StudentSidebar />
+            </SidebarContent>
+          </Sidebar>
+          <SidebarInset className="flex-1 p-6">
+            <Outlet />
+          </SidebarInset>
+        </SidebarProvider>
       </div>
       <Footer />
     </div>
@@ -51,14 +53,16 @@ function AdminLayout() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <div className="flex-1 flex">
-        <Sidebar>
-          <SidebarContent>
-            <AdminSidebar />
-          </SidebarContent>
-        </Sidebar>
-        <SidebarInset className="flex-1 p-6">
-          <Outlet />
-        </SidebarInset>
+        <SidebarProvider>
+          <Sidebar>
+            <SidebarContent>
+              <AdminSidebar />
+            </SidebarContent>
+          </Sidebar>
+          <SidebarInset className="flex-1 p-6">
+            <Outlet />
+          </SidebarInset>
+        </SidebarProvider>
       </div>
       <Footer />
     </div>

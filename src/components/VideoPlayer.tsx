@@ -1,8 +1,17 @@
 import React from 'react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
-import { Play, Pause, RotateCcw, Volume2, Maximize2, VolumeX } from 'lucide-react';
+import { Play, Pause, RotateCcw, Volume2, Maximize2, VolumeX, Languages } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from 'sonner';
 
 interface VideoPlayerProps {
   videoUrl: string;
@@ -10,11 +19,20 @@ interface VideoPlayerProps {
   instructor?: string;
 }
 
+interface TranscriptSegment {
+  start: number;
+  end: number;
+  text: string;
+}
+
 export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) => {
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [progress, setProgress] = React.useState(0);
   const [volume, setVolume] = React.useState(1);
   const [isMuted, setIsMuted] = React.useState(false);
+  const [transcript, setTranscript] = React.useState<TranscriptSegment[]>([]);
+  const [selectedLanguage, setSelectedLanguage] = React.useState('en');
+  const [isTranscribing, setIsTranscribing] = React.useState(false);
   const videoRef = React.useRef<HTMLVideoElement>(null);
 
   const togglePlay = () => {
@@ -32,6 +50,16 @@ export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) =
     if (videoRef.current) {
       const progress = (videoRef.current.currentTime / videoRef.current.duration) * 100;
       setProgress(progress);
+      
+      // Update active transcript segment
+      const currentTime = videoRef.current.currentTime;
+      const activeSegment = transcript.find(
+        seg => currentTime >= seg.start && currentTime <= seg.end
+      );
+      if (activeSegment) {
+        // Update UI to highlight current segment
+        console.log('Current segment:', activeSegment.text);
+      }
     }
   };
 
@@ -56,6 +84,37 @@ export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) =
       } else {
         videoRef.current.requestFullscreen();
       }
+    }
+  };
+
+  const handleTranscribe = async () => {
+    if (!videoUrl) {
+      toast.error('No video URL provided');
+      return;
+    }
+
+    setIsTranscribing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('transcribe-translate', {
+        body: { videoUrl, targetLanguage: selectedLanguage }
+      });
+
+      if (error) throw error;
+
+      setTranscript(data.timestamps);
+      toast.success('Transcription completed');
+    } catch (error) {
+      console.error('Transcription error:', error);
+      toast.error('Failed to transcribe video');
+    } finally {
+      setIsTranscribing(false);
+    }
+  };
+
+  const handleLanguageChange = (value: string) => {
+    setSelectedLanguage(value);
+    if (transcript.length > 0) {
+      handleTranscribe(); // Re-transcribe with new language
     }
   };
 
@@ -87,6 +146,28 @@ export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) =
       <div className="p-4 space-y-4">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+          <div className="flex items-center gap-2">
+            <Select value={selectedLanguage} onValueChange={handleLanguageChange}>
+              <SelectTrigger className="w-[120px]">
+                <SelectValue placeholder="Language" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="en">English</SelectItem>
+                <SelectItem value="es">Spanish</SelectItem>
+                <SelectItem value="fr">French</SelectItem>
+                <SelectItem value="de">German</SelectItem>
+                <SelectItem value="hi">Hindi</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleTranscribe}
+              disabled={isTranscribing}
+            >
+              <Languages className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
         <div className="space-y-2">
           <div 
@@ -143,6 +224,33 @@ export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) =
             </Button>
           </div>
         </div>
+        {transcript.length > 0 && (
+          <div className="mt-4 p-4 bg-muted/50 rounded-lg">
+            <h4 className="font-medium mb-2">Transcript</h4>
+            <div className="space-y-2 text-sm text-muted-foreground">
+              {transcript.map((segment, index) => (
+                <div
+                  key={index}
+                  className={cn(
+                    "p-2 rounded transition-colors",
+                    videoRef.current &&
+                    videoRef.current.currentTime >= segment.start &&
+                    videoRef.current.currentTime <= segment.end
+                      ? "bg-primary/10"
+                      : "hover:bg-muted"
+                  )}
+                  onClick={() => {
+                    if (videoRef.current) {
+                      videoRef.current.currentTime = segment.start;
+                    }
+                  }}
+                >
+                  {segment.text}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </Card>
   );

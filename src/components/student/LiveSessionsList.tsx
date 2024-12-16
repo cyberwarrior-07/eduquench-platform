@@ -55,9 +55,9 @@ export const LiveSessionsList = ({ sessions: propSessions }: LiveSessionsListPro
   }, [error]);
 
   return (
-    <Card className="col-span-full">
+    <Card className="col-span-full bg-white border border-gray-100 shadow-sm">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-gray-900">
           <Clock className="h-5 w-5" />
           Upcoming Live Sessions
         </CardTitle>
@@ -65,26 +65,26 @@ export const LiveSessionsList = ({ sessions: propSessions }: LiveSessionsListPro
       <CardContent>
         <div className="space-y-4">
           {isLoading ? (
-            <p className="text-muted-foreground text-center py-4">
+            <p className="text-gray-600 text-center py-4">
               Loading sessions...
             </p>
           ) : sessions?.length === 0 ? (
-            <p className="text-muted-foreground text-center py-4">
+            <p className="text-gray-600 text-center py-4">
               No upcoming live sessions scheduled
             </p>
           ) : (
             sessions?.map((session) => (
               <div
                 key={session.id}
-                className="flex items-center justify-between p-4 rounded-lg border"
+                className="flex items-center justify-between p-4 rounded-lg border border-gray-100 bg-white hover:bg-gray-50 transition-colors"
               >
                 <div>
-                  <h3 className="font-medium">{session.title}</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <h3 className="font-medium text-gray-900">{session.title}</h3>
+                  <p className="text-sm text-gray-600">
                     {new Date(session.start_time).toLocaleString()}
                   </p>
                   {session.courses?.title && (
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-gray-600">
                       Course: {session.courses.title}
                     </p>
                   )}

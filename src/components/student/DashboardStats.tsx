@@ -8,9 +8,9 @@ interface DashboardStatsProps {
 
 export const DashboardStats = ({ courses }: DashboardStatsProps) => {
   return (
-    <Card className="col-span-full md:col-span-2">
+    <Card className="col-span-full md:col-span-2 bg-white border border-gray-100 shadow-sm">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-gray-900">
           <BookOpen className="h-5 w-5" />
           Course Progress
         </CardTitle>
@@ -20,12 +20,15 @@ export const DashboardStats = ({ courses }: DashboardStatsProps) => {
           {courses?.map((course) => (
             <div key={course.id} className="space-y-2">
               <div className="flex justify-between items-center">
-                <span className="font-medium truncate">{course.title}</span>
-                <span className="text-sm text-muted-foreground">
+                <span className="font-medium truncate text-gray-900">{course.title}</span>
+                <span className="text-sm text-gray-600">
                   {course.student_progress?.[0]?.progress || 0}%
                 </span>
               </div>
-              <Progress value={course.student_progress?.[0]?.progress || 0} />
+              <Progress 
+                value={course.student_progress?.[0]?.progress || 0}
+                className="bg-gray-100"
+              />
             </div>
           ))}
         </div>

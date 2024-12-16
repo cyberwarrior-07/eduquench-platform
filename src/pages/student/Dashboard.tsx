@@ -84,12 +84,12 @@ export default function StudentDashboard() {
 
   if (coursesLoading) {
     return (
-      <div className="container mx-auto py-8">
+      <div className="w-full h-full p-4 md:p-6 bg-white">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+          <div className="h-8 bg-gray-100 rounded w-1/4"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="h-64 bg-gray-200 rounded"></div>
-            <div className="h-64 bg-gray-200 rounded"></div>
+            <div className="h-64 bg-gray-100 rounded"></div>
+            <div className="h-64 bg-gray-100 rounded"></div>
           </div>
         </div>
       </div>
@@ -97,9 +97,9 @@ export default function StudentDashboard() {
   }
 
   return (
-    <div className="space-y-6 w-full">
+    <div className="w-full min-h-screen bg-white p-4 md:p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">
+        <h1 className="text-3xl font-bold text-gray-900">
           Hello, {profile?.username || 'Student'}! 👋
         </h1>
       </div>
@@ -107,9 +107,9 @@ export default function StudentDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <DashboardStats courses={courses || []} />
 
-        <Card className="col-span-1">
+        <Card className="col-span-1 bg-white border border-gray-100 shadow-sm">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-gray-900">
               <CalendarIcon className="h-5 w-5" />
               Calendar
             </CardTitle>
@@ -119,14 +119,14 @@ export default function StudentDashboard() {
               mode="single"
               selected={date}
               onSelect={setDate}
-              className="rounded-md border"
+              className="rounded-md border border-gray-100"
             />
           </CardContent>
         </Card>
 
-        <Card className="col-span-1">
+        <Card className="col-span-1 bg-white border border-gray-100 shadow-sm">
           <CardHeader>
-            <CardTitle>Overall Progress</CardTitle>
+            <CardTitle className="text-gray-900">Overall Progress</CardTitle>
           </CardHeader>
           <CardContent>
             <Slider
@@ -136,7 +136,7 @@ export default function StudentDashboard() {
               onValueChange={setSliderValue}
               className="w-full"
             />
-            <p className="text-center mt-2">{sliderValue}%</p>
+            <p className="text-center mt-2 text-gray-600">{sliderValue}%</p>
           </CardContent>
         </Card>
 

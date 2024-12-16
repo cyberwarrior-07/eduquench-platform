@@ -8,9 +8,9 @@ interface EnrolledCoursesProps {
 
 export const EnrolledCourses = ({ courses }: EnrolledCoursesProps) => {
   return (
-    <Card className="col-span-full">
+    <Card className="col-span-full bg-white border border-gray-100 shadow-sm">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-gray-900">
           <BookOpen className="h-5 w-5" />
           My Courses
         </CardTitle>

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Bell, LogOut, LogIn } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,6 +8,7 @@ import { toast } from "sonner";
 export const Header = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -28,9 +29,10 @@ export const Header = () => {
       setLoading(true);
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      toast('Successfully signed out');
+      toast.success('Successfully signed out');
+      navigate('/');
     } catch (error) {
-      toast('Error signing out');
+      toast.error('Error signing out');
     } finally {
       setLoading(false);
     }
@@ -39,10 +41,10 @@ export const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
-        <div className="mr-4 hidden md:flex">
-          <Link to="/" className="mr-6 flex items-center space-x-3">
+        <div className="mr-4 md:flex">
+          <Link to="/" className="mr-6 flex items-center space-x-3 hover:opacity-90 transition-opacity">
             <img src="/logo.svg" alt="EduQuench Logo" className="h-8 w-8" />
-            <span className="hidden font-bold sm:inline-block text-primary hover:text-primary/90 transition-colors">
+            <span className="hidden font-bold sm:inline-block text-primary">
               EduQuench
             </span>
           </Link>

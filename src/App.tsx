@@ -5,6 +5,7 @@ import APISettings from "./pages/admin/APISettings";
 import CourseList from "./pages/admin/courses/CourseList";
 import CourseForm from "./pages/admin/courses/CourseForm";
 import Login from "./pages/auth/Login";
+import Index from "./pages/Index";
 import { useEffect, useState } from "react";
 import { supabase } from "./integrations/supabase/client";
 import { toast } from "sonner";
@@ -72,6 +73,7 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<Index />} />
         <Route path="/login" element={<Login />} />
         
         <Route path="/admin" element={
@@ -86,7 +88,7 @@ function App() {
           <Route path="courses/:id" element={<CourseForm />} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );

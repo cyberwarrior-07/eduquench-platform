@@ -4,8 +4,9 @@ import { CourseSidebar } from '@/components/CourseSidebar';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, Menu, Lock } from 'lucide-react';
 import { useParams, Navigate } from 'react-router-dom';
-import { mockCourses } from './Courses';
 import { toast } from 'sonner';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const mockModules = [
   {
@@ -63,13 +64,33 @@ export default function CourseContent() {
   const [selectedLesson, setSelectedLesson] = useState(mockModules[0].lessons[0]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { id } = useParams();
-  const course = mockCourses.find((c) => c.id === id);
+
+  const { data: course, isLoading } = useQuery({
+    queryKey: ['course', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('courses')
+        .select('*')
+        .eq('id', id)
+        .single();
+      
+      if (error) {
+        toast.error('Error fetching course');
+        throw error;
+      }
+      return data;
+    },
+  });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   if (!course) {
     return <Navigate to="/courses" replace />;
   }
 
-  if (course.isLocked) {
+  if (!course.is_published) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
@@ -117,7 +138,7 @@ export default function CourseContent() {
               <VideoPlayerWithTranscript
                 videoUrl="/path-to-video.mp4"
                 title={selectedLesson.title}
-                instructor={course.instructor}
+                instructor={course.mentor_id || 'TBD'}
               />
               
               <div className="prose max-w-none">

@@ -1,13 +1,50 @@
 import { useParams } from "react-router-dom";
-import { mockCourses } from "./Courses";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Clock, GraduationCap, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export default function CourseDetail() {
   const { id } = useParams();
-  const course = mockCourses.find((c) => c.id === id);
+  
+  const { data: course, isLoading } = useQuery({
+    queryKey: ['course', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('courses')
+        .select(`
+          *,
+          profiles:mentor_id (
+            username
+          )
+        `)
+        .eq('id', id)
+        .single();
+      
+      if (error) {
+        toast.error('Error fetching course');
+        throw error;
+      }
+      return {
+        ...data,
+        duration: '10 weeks', // Default value
+        lessons: 12, // Default value
+        level: 'Beginner', // Default value
+        enrollmentStatus: data.is_published ? 'Open' : 'Closed',
+        isLocked: !data.is_published,
+        objectives: [],
+        requirements: [],
+        progress: 0,
+      };
+    },
+  });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   if (!course) {
     return <div>Course not found</div>;
@@ -20,7 +57,7 @@ export default function CourseDetail() {
         <div className="md:col-span-2 space-y-6">
           <div className="relative">
             <img
-              src={course.thumbnail}
+              src={course.thumbnail_url || '/placeholder.svg'}
               alt={course.title}
               className="w-full h-[400px] object-cover rounded-lg"
             />
@@ -92,12 +129,12 @@ export default function CourseDetail() {
           <div className="border rounded-lg p-6 space-y-6">
             <div className="flex items-center gap-4">
               <img
-                src={`https://api.dicebear.com/7.x/initials/svg?seed=${course.instructor}`}
-                alt={course.instructor}
+                src={`https://api.dicebear.com/7.x/initials/svg?seed=${course.profiles?.username || 'Instructor'}`}
+                alt={course.profiles?.username || 'Instructor'}
                 className="w-12 h-12 rounded-full"
               />
               <div>
-                <p className="font-semibold">{course.instructor}</p>
+                <p className="font-semibold">{course.profiles?.username || 'Instructor'}</p>
                 <p className="text-sm text-gray-600">Course Instructor</p>
               </div>
             </div>
@@ -108,10 +145,10 @@ export default function CourseDetail() {
 
             <div className="space-y-2">
               <Badge variant="outline" className="w-full justify-center">
-                {course.category}
+                {course.level}
               </Badge>
               <Badge variant="outline" className="w-full justify-center">
-                {course.level}
+                {course.enrollmentStatus}
               </Badge>
             </div>
           </div>

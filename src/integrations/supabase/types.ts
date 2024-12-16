@@ -101,13 +101,63 @@ export type Database = {
           },
         ]
       }
+      course_content: {
+        Row: {
+          content: Json
+          course_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_published: boolean | null
+          order_index: number
+          title: string
+          type: Database["public"]["Enums"]["content_type"]
+          updated_at: string
+        }
+        Insert: {
+          content?: Json
+          course_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_published?: boolean | null
+          order_index?: number
+          title: string
+          type: Database["public"]["Enums"]["content_type"]
+          updated_at?: string
+        }
+        Update: {
+          content?: Json
+          course_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_published?: boolean | null
+          order_index?: number
+          title?: string
+          type?: Database["public"]["Enums"]["content_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_content_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courses: {
         Row: {
           created_at: string
           created_by: string | null
+          currency: string | null
           description: string | null
           id: string
+          is_published: boolean | null
           mentor_id: string | null
+          price: number | null
           status: string
           thumbnail_url: string | null
           title: string
@@ -116,9 +166,12 @@ export type Database = {
         Insert: {
           created_at?: string
           created_by?: string | null
+          currency?: string | null
           description?: string | null
           id?: string
+          is_published?: boolean | null
           mentor_id?: string | null
+          price?: number | null
           status?: string
           thumbnail_url?: string | null
           title: string
@@ -127,9 +180,12 @@ export type Database = {
         Update: {
           created_at?: string
           created_by?: string | null
+          currency?: string | null
           description?: string | null
           id?: string
+          is_published?: boolean | null
           mentor_id?: string | null
+          price?: number | null
           status?: string
           thumbnail_url?: string | null
           title?: string
@@ -148,6 +204,50 @@ export type Database = {
             columns: ["mentor_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      live_sessions: {
+        Row: {
+          course_id: string | null
+          created_at: string
+          description: string | null
+          duration: number
+          id: string
+          meeting_link: string | null
+          start_time: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          course_id?: string | null
+          created_at?: string
+          description?: string | null
+          duration: number
+          id?: string
+          meeting_link?: string | null
+          start_time: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          course_id?: string | null
+          created_at?: string
+          description?: string | null
+          duration?: number
+          id?: string
+          meeting_link?: string | null
+          start_time?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "live_sessions_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
             referencedColumns: ["id"]
           },
         ]
@@ -232,6 +332,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      content_type: "video" | "quiz" | "assignment" | "live"
       user_role: "student" | "mentor" | "admin"
     }
     CompositeTypes: {

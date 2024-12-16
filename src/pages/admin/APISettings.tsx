@@ -123,6 +123,14 @@ export default function APISettings() {
         { key: "api_key", label: "API Key" },
         { key: "api_secret", label: "API Secret" }
       ]
+    },
+    {
+      title: "Razorpay",
+      description: "Accept payments using Razorpay payment gateway",
+      fields: [
+        { key: "key_id", label: "Key ID" },
+        { key: "key_secret", label: "Key Secret" }
+      ]
     }
   ];
 

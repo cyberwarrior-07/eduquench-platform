@@ -170,8 +170,7 @@ export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) =
           <div className="space-y-4">
             <Progress 
               value={progress} 
-              className="h-1 bg-white/20" 
-              indicatorClassName="bg-primary"
+              className="h-1 bg-white/20 [&>[role=progressbar]]:bg-primary" 
             />
             
             <div className="flex justify-between items-center text-white">

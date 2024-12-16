@@ -1,5 +1,5 @@
 import React from 'react';
-import { VideoPlayer } from '@/components/VideoPlayer';
+import { VideoPlayerWithTranscript } from '@/components/VideoPlayerWithTranscript';
 import { CourseSidebar } from '@/components/CourseSidebar';
 import { Button } from '@/components/ui/button';
 import { MessageCircle } from 'lucide-react';
@@ -55,7 +55,7 @@ export default function CourseContent() {
     <div className="flex h-[calc(100vh-4rem)]">
       <div className="flex-1 p-6 overflow-y-auto">
         <div className="max-w-5xl mx-auto space-y-6">
-          <VideoPlayer
+          <VideoPlayerWithTranscript
             videoUrl="/path-to-video.mp4"
             title={selectedLesson.title}
             instructor="John Doe"

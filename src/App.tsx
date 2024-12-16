@@ -12,6 +12,7 @@ import Quizzes from "./pages/Quizzes";
 import Schedule from "./pages/Schedule";
 import Discussions from "./pages/Discussions";
 import Resources from "./pages/Resources";
+import CourseContent from "./pages/CourseContent";
 import { StudentSidebar } from "./components/StudentSidebar";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./components/ui/button";
@@ -22,7 +23,6 @@ const AppContent = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const location = useLocation();
   
-  // Only show sidebar for LMS routes
   const isLMSRoute = !['/'].includes(location.pathname);
 
   return (
@@ -30,18 +30,20 @@ const AppContent = () => {
       {isLMSRoute && (
         <div className={`fixed h-full transition-all duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-64'}`}>
           <StudentSidebar />
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute -right-10 top-4 bg-white border shadow-sm hover:bg-gray-100"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-          >
-            {sidebarOpen ? (
-              <ChevronLeft className="h-4 w-4" />
-            ) : (
-              <ChevronRight className="h-4 w-4" />
-            )}
-          </Button>
+          <div className="fixed left-64 top-1/2 -translate-y-1/2 z-50">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute -right-6 bg-white border shadow-sm hover:bg-gray-100"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+            >
+              {sidebarOpen ? (
+                <ChevronLeft className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
         </div>
       )}
       <main className={`flex-1 transition-all duration-300 ${isLMSRoute ? (sidebarOpen ? 'ml-64' : 'ml-0') : ''}`}>
@@ -54,6 +56,7 @@ const AppContent = () => {
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/discussions" element={<Discussions />} />
           <Route path="/resources" element={<Resources />} />
+          <Route path="/course/:courseId/content" element={<CourseContent />} />
         </Routes>
       </main>
     </div>

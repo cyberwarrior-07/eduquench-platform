@@ -25,7 +25,7 @@ export const StudentSidebar = ({ className }: StudentSidebarProps) => {
     {
       title: "Dashboard",
       icon: LayoutDashboard,
-      href: "/student/dashboard",
+      href: "/dashboard",
     },
     {
       title: "Courses",
@@ -35,7 +35,7 @@ export const StudentSidebar = ({ className }: StudentSidebarProps) => {
     {
       title: "Live Sessions",
       icon: GraduationCap,
-      href: "/student/live-sessions",
+      href: "/live-sessions",
     },
     {
       title: "Schedule",
@@ -67,21 +67,23 @@ export const StudentSidebar = ({ className }: StudentSidebarProps) => {
         className
       )}
     >
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute -right-4 top-6 z-10 rounded-full border shadow-md"
-        onClick={() => setIsCollapsed(!isCollapsed)}
-      >
-        <ChevronLeft
-          className={cn(
-            "h-4 w-4 transition-all",
-            isCollapsed ? "rotate-180" : "rotate-0"
-          )}
-        />
-      </Button>
-      <ScrollArea className="flex-1">
-        <div className="space-y-1 p-2">
+      <div className="absolute inset-y-0 right-0 flex items-center">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="-right-4 z-10 rounded-full border shadow-md bg-background"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+        >
+          <ChevronLeft
+            className={cn(
+              "h-4 w-4 transition-all",
+              isCollapsed ? "rotate-180" : "rotate-0"
+            )}
+          />
+        </Button>
+      </div>
+      <ScrollArea className="flex-1 p-4">
+        <div className="space-y-2">
           {links.map((link) => (
             <NavLink
               key={link.href}

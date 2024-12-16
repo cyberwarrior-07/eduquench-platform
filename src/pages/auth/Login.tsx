@@ -141,7 +141,7 @@ export default function Login() {
                 message: 'text-sm text-red-500',
               },
             }}
-            providers={['google', 'github']}
+            providers={['google']}
             redirectTo={window.location.origin}
             theme="light"
           />

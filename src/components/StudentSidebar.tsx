@@ -8,14 +8,16 @@ import {
   CalendarDays,
   BookOpen,
   Settings,
-  ChevronLeft,
   Maximize2,
   Minimize2,
 } from "lucide-react";
 import { useState } from "react";
 
-export function StudentSidebar() {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+interface StudentSidebarProps {
+  isCollapsed: boolean;
+}
+
+export function StudentSidebar({ isCollapsed }: StudentSidebarProps) {
   const [isFullScreen, setIsFullScreen] = useState(false);
 
   const links = [
@@ -57,25 +59,8 @@ export function StudentSidebar() {
   };
 
   return (
-    <div className={cn(
-      "relative h-full bg-white transition-all duration-300 ease-in-out",
-      isCollapsed ? "w-16" : "w-64"
-    )}>
-      <div className="flex items-center justify-between p-4 border-b">
-        <Button
-          variant="outline"
-          size="sm"
-          className="flex items-center gap-2"
-          onClick={() => setIsCollapsed(!isCollapsed)}
-        >
-          <ChevronLeft
-            className={cn(
-              "h-4 w-4 transition-transform duration-300",
-              isCollapsed ? "rotate-180" : "rotate-0"
-            )}
-          />
-          {!isCollapsed && <span>Collapse</span>}
-        </Button>
+    <div className="h-full bg-white">
+      <div className="flex items-center justify-end p-4">
         {!isCollapsed && (
           <Button
             variant="ghost"

@@ -3,21 +3,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CourseContentList } from "@/components/admin/CourseContentList";
 import { LiveSessionList } from "@/components/admin/LiveSessionList";
+import { CourseBasicInfo } from "@/components/admin/courses/form/CourseBasicInfo";
+import { ContentBuilder } from "@/components/admin/courses/form/ContentBuilder";
 
 interface CourseFormData {
   title: string;
@@ -25,6 +16,7 @@ interface CourseFormData {
   price: string;
   currency: string;
   is_published: boolean;
+  thumbnail_url?: string;
 }
 
 export default function CourseForm() {
@@ -39,6 +31,7 @@ export default function CourseForm() {
     price: "",
     currency: "INR",
     is_published: false,
+    thumbnail_url: "",
   });
 
   const { data: course, isLoading } = useQuery({
@@ -64,6 +57,7 @@ export default function CourseForm() {
             price: data.price?.toString() || "",
             currency: data.currency || "INR",
             is_published: data.is_published || false,
+            thumbnail_url: data.thumbnail_url || "",
           });
         }
       }
@@ -119,7 +113,7 @@ export default function CourseForm() {
         <h1 className="text-3xl font-bold">
           {isEditing ? "Edit Course" : "New Course"}
         </h1>
-        <p className="text-gray-500">
+        <p className="text-muted-foreground">
           {isEditing
             ? "Update your course details and manage content"
             : "Create a new course"}
@@ -136,70 +130,11 @@ export default function CourseForm() {
           
           <TabsContent value="details">
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="title">Title</Label>
-                  <Input
-                    id="title"
-                    value={formData.title}
-                    onChange={(e) =>
-                      setFormData({ ...formData, title: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="price">Price</Label>
-                  <div className="flex gap-4">
-                    <Input
-                      id="price"
-                      type="number"
-                      value={formData.price}
-                      onChange={(e) =>
-                        setFormData({ ...formData, price: e.target.value })
-                      }
-                    />
-                    <Select
-                      value={formData.currency}
-                      onValueChange={(value) =>
-                        setFormData({ ...formData, currency: value })
-                      }
-                    >
-                      <SelectTrigger className="w-32">
-                        <SelectValue placeholder="Currency" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="INR">INR</SelectItem>
-                        <SelectItem value="USD">USD</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="is_published"
-                    checked={formData.is_published}
-                    onCheckedChange={(checked) =>
-                      setFormData({ ...formData, is_published: checked })
-                    }
-                  />
-                  <Label htmlFor="is_published">Published</Label>
-                </div>
-              </div>
-
+              <CourseBasicInfo
+                formData={formData}
+                setFormData={setFormData}
+                isEditing={isEditing}
+              />
               <div className="flex gap-4">
                 <Button type="submit">Save Course</Button>
                 <Button
@@ -222,42 +157,13 @@ export default function CourseForm() {
           </TabsContent>
         </Tabs>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
-              }
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="price">Price</Label>
-            <Input
-              id="price"
-              type="number"
-              value={formData.price}
-              onChange={(e) =>
-                setFormData({ ...formData, price: e.target.value })
-              }
-            />
-          </div>
-
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <CourseBasicInfo
+            formData={formData}
+            setFormData={setFormData}
+            isEditing={isEditing}
+          />
+          <ContentBuilder />
           <div className="flex gap-4">
             <Button type="submit">Create Course</Button>
             <Button

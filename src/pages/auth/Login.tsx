@@ -1,24 +1,58 @@
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { authStyles } from '@/components/auth/AuthStyles';
 import { LoadingState } from '@/components/auth/LoadingState';
+import { useToast } from "@/components/ui/use-toast";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
+      console.log('Auth state changed:', event, session);
+      
+      if (event === 'SIGNED_IN') {
+        console.log('User signed in successfully');
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully signed in.",
+        });
         navigate('/dashboard');
       }
+
+      if (event === 'SIGNED_OUT') {
+        console.log('User signed out');
+      }
+
+      // Set loading to false after we've checked the auth state
+      setIsLoading(false);
     });
 
-    return () => subscription.unsubscribe();
-  }, [navigate]);
+    // Check initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session check:', session);
+      if (session) {
+        console.log('User already logged in, redirecting...');
+        navigate('/dashboard');
+      }
+      setIsLoading(false);
+    });
+
+    return () => {
+      console.log('Cleaning up auth subscription');
+      subscription.unsubscribe();
+    };
+  }, [navigate, toast]);
+
+  if (isLoading) {
+    return <LoadingState />;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -35,6 +69,14 @@ const Login = () => {
           }}
           theme="light"
           providers={[]}
+          onError={(error) => {
+            console.error('Auth error:', error);
+            toast({
+              variant: "destructive",
+              title: "Authentication Error",
+              description: error.message,
+            });
+          }}
         />
       </Card>
     </div>

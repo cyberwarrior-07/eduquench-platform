@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { Button } from "@/components/ui/button";
-import { Plus, GripVertical, Video, FileText, BookOpen, Trash2, Folder } from "lucide-react";
+import { Plus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -9,21 +9,20 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
+import { ContentType } from "../../course-content/AddContentForm";
+import { ContentTypeSelect } from "./content-builder/ContentTypeSelect";
+import { ContentItem } from "./content-builder/ContentItem";
+import { VideoContentForm } from "../courses/form/content-types/VideoContentForm";
+import { QuizContentForm } from "../courses/form/content-types/QuizContentForm";
+import { ChapterContentForm } from "../courses/form/content-types/ChapterContentForm";
+import { LessonContentForm } from "../courses/form/content-types/LessonContentForm";
 
 interface ContentItem {
   id: string;
-  type: 'video' | 'quiz' | 'chapter' | 'lesson';
+  type: ContentType;
   title: string;
   description?: string;
   content?: any;
@@ -55,9 +54,10 @@ export function ContentBuilder() {
       ...items,
       {
         id: crypto.randomUUID(),
-        type: newItem.type as 'video' | 'quiz' | 'chapter' | 'lesson',
+        type: newItem.type as ContentType,
         title: newItem.title,
         description: newItem.description,
+        content: newItem.content,
       },
     ]);
 
@@ -69,33 +69,38 @@ export function ContentBuilder() {
     setItems(items.filter((item) => item.id !== id));
   };
 
-  const getItemIcon = (type: string) => {
-    switch (type) {
-      case 'video':
-        return <Video className="h-4 w-4" />;
-      case 'quiz':
-        return <FileText className="h-4 w-4" />;
-      case 'chapter':
-        return <Folder className="h-4 w-4" />;
-      case 'lesson':
-        return <BookOpen className="h-4 w-4" />;
+  const renderContentForm = () => {
+    switch (newItem.type) {
+      case "video":
+        return (
+          <VideoContentForm
+            value={newItem.content}
+            onChange={(content) => setNewItem({ ...newItem, content })}
+          />
+        );
+      case "quiz":
+        return (
+          <QuizContentForm
+            value={newItem.content}
+            onChange={(content) => setNewItem({ ...newItem, content })}
+          />
+        );
+      case "chapter":
+        return (
+          <ChapterContentForm
+            value={newItem.content}
+            onChange={(content) => setNewItem({ ...newItem, content })}
+          />
+        );
+      case "lesson":
+        return (
+          <LessonContentForm
+            value={newItem.content}
+            onChange={(content) => setNewItem({ ...newItem, content })}
+          />
+        );
       default:
         return null;
-    }
-  };
-
-  const getItemBadgeColor = (type: string) => {
-    switch (type) {
-      case 'video':
-        return 'bg-blue-100 text-blue-800';
-      case 'quiz':
-        return 'bg-green-100 text-green-800';
-      case 'chapter':
-        return 'bg-purple-100 text-purple-800';
-      case 'lesson':
-        return 'bg-orange-100 text-orange-800';
-      default:
-        return '';
     }
   };
 
@@ -115,25 +120,10 @@ export function ContentBuilder() {
               <DialogTitle>Add Course Content</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <div>
-                <Label>Content Type</Label>
-                <Select
-                  value={newItem.type}
-                  onValueChange={(value: 'video' | 'quiz' | 'chapter' | 'lesson') =>
-                    setNewItem({ ...newItem, type: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="video">Video</SelectItem>
-                    <SelectItem value="quiz">Quiz</SelectItem>
-                    <SelectItem value="chapter">Chapter</SelectItem>
-                    <SelectItem value="lesson">Lesson</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <ContentTypeSelect
+                value={newItem.type as ContentType}
+                onChange={(type) => setNewItem({ ...newItem, type, content: {} })}
+              />
               <div>
                 <Label>Title</Label>
                 <Input
@@ -152,6 +142,7 @@ export function ContentBuilder() {
                   }
                 />
               </div>
+              {renderContentForm()}
               <Button onClick={handleAddItem}>Add</Button>
             </div>
           </DialogContent>
@@ -172,35 +163,12 @@ export function ContentBuilder() {
                     <div
                       ref={provided.innerRef}
                       {...provided.draggableProps}
-                      className="flex items-center gap-4 p-4 bg-background border rounded-lg group hover:border-primary/50 transition-colors"
                     >
-                      <div {...provided.dragHandleProps}>
-                        <GripVertical className="h-5 w-5 text-muted-foreground" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <Badge variant="secondary" className={getItemBadgeColor(item.type)}>
-                            <span className="flex items-center gap-1">
-                              {getItemIcon(item.type)}
-                              {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
-                            </span>
-                          </Badge>
-                          <span className="font-medium">{item.title}</span>
-                        </div>
-                        {item.description && (
-                          <p className="text-sm text-muted-foreground mt-1">
-                            {item.description}
-                          </p>
-                        )}
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleRemoveItem(item.id)}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <ContentItem
+                        {...item}
+                        onRemove={handleRemoveItem}
+                        dragHandleProps={provided.dragHandleProps}
+                      />
                     </div>
                   )}
                 </Draggable>

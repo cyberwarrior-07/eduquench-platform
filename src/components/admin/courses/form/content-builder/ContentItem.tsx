@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { GripVertical, Video, FileText, BookOpen, Trash2, Folder } from "lucide-react";
-import { ContentType } from "../../course-content/AddContentForm";
+import { ContentType } from "../content-types/types";
 
 interface ContentItemProps {
   id: string;

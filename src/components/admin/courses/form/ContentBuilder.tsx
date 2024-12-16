@@ -12,17 +12,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ContentType } from "../../course-content/AddContentForm";
 import { ContentTypeSelect } from "./content-builder/ContentTypeSelect";
 import { ContentItem } from "./content-builder/ContentItem";
-import { VideoContentForm } from "../courses/form/content-types/VideoContentForm";
-import { QuizContentForm } from "../courses/form/content-types/QuizContentForm";
-import { ChapterContentForm } from "../courses/form/content-types/ChapterContentForm";
-import { LessonContentForm } from "../courses/form/content-types/LessonContentForm";
+import { VideoContentForm } from "./content-types/VideoContentForm";
+import { QuizContentForm } from "./content-types/QuizContentForm";
+import { ChapterContentForm } from "./content-types/ChapterContentForm";
+import { LessonContentForm } from "./content-types/LessonContentForm";
 
 interface ContentItem {
   id: string;
-  type: ContentType;
+  type: "video" | "quiz" | "chapter" | "lesson";
   title: string;
   description?: string;
   content?: any;
@@ -54,7 +53,7 @@ export function ContentBuilder() {
       ...items,
       {
         id: crypto.randomUUID(),
-        type: newItem.type as ContentType,
+        type: newItem.type as "video" | "quiz" | "chapter" | "lesson",
         title: newItem.title,
         description: newItem.description,
         content: newItem.content,
@@ -121,7 +120,7 @@ export function ContentBuilder() {
             </DialogHeader>
             <div className="space-y-4">
               <ContentTypeSelect
-                value={newItem.type as ContentType}
+                value={newItem.type as "video" | "quiz" | "chapter" | "lesson"}
                 onChange={(type) => setNewItem({ ...newItem, type, content: {} })}
               />
               <div>

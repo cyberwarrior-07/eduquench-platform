@@ -6,7 +6,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { ContentType } from "../../course-content/AddContentForm";
+import { ContentType } from "../content-types/types";
 
 interface ContentTypeSelectProps {
   value: ContentType;

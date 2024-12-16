@@ -10,26 +10,29 @@ import StudentDashboard from "./pages/student/Dashboard";
 import { useEffect, useState } from "react";
 import { supabase } from "./integrations/supabase/client";
 import { toast } from "sonner";
+import { SessionContextProvider } from '@supabase/auth-helpers-react';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/courses" element={<Courses />} />
-        <Route path="/dashboard" element={<StudentDashboard />} />
-        
-        <Route path="/admin" element={<AdminLayout><Outlet /></AdminLayout>}>
-          <Route index element={<AdminDashboard />} />
-          <Route path="settings" element={<APISettings />} />
-          <Route path="courses" element={<CourseList />} />
-          <Route path="courses/new" element={<CourseForm />} />
-          <Route path="courses/:id" element={<CourseForm />} />
-        </Route>
+    <SessionContextProvider supabaseClient={supabase}>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/courses" element={<Courses />} />
+          <Route path="/dashboard" element={<StudentDashboard />} />
+          
+          <Route path="/admin" element={<AdminLayout><Outlet /></AdminLayout>}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="settings" element={<APISettings />} />
+            <Route path="courses" element={<CourseList />} />
+            <Route path="courses/new" element={<CourseForm />} />
+            <Route path="courses/:id" element={<CourseForm />} />
+          </Route>
 
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Router>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
+    </SessionContextProvider>
   );
 }
 

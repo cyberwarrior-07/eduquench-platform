@@ -2,9 +2,35 @@ import { Button } from "@/components/ui/button";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const Index = () => {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // Check for session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setUser(session.user);
+      }
+    });
+
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        setUser(session.user);
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -25,8 +51,8 @@ const Index = () => {
               <Button size="lg" onClick={() => navigate("/courses")}>
                 Explore Courses
               </Button>
-              <Button size="lg" variant="outline">
-                Learn More
+              <Button size="lg" variant="outline" onClick={() => navigate("/dashboard")}>
+                Go to Dashboard
               </Button>
             </div>
           </div>

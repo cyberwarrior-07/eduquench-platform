@@ -14,6 +14,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Handle auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('Auth state changed:', event, session);
       
@@ -30,8 +31,17 @@ const Login = () => {
         console.log('User signed out');
       }
 
-      // Set loading to false after we've checked the auth state
       setIsLoading(false);
+    });
+
+    // Handle auth errors
+    const { data: { subscription: errorSubscription } } = supabase.auth.onError((error) => {
+      console.error('Auth error:', error);
+      toast({
+        variant: "destructive",
+        title: "Authentication Error",
+        description: error.message,
+      });
     });
 
     // Check initial session
@@ -45,8 +55,9 @@ const Login = () => {
     });
 
     return () => {
-      console.log('Cleaning up auth subscription');
+      console.log('Cleaning up auth subscriptions');
       subscription.unsubscribe();
+      errorSubscription.unsubscribe();
     };
   }, [navigate, toast]);
 
@@ -69,14 +80,6 @@ const Login = () => {
           }}
           theme="light"
           providers={[]}
-          onError={(error) => {
-            console.error('Auth error:', error);
-            toast({
-              variant: "destructive",
-              title: "Authentication Error",
-              description: error.message,
-            });
-          }}
         />
       </Card>
     </div>

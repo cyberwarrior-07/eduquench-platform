@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -21,6 +21,43 @@ interface CourseFormData {
 export default function CourseForm() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  // Check user authentication and role
+  const { data: session } = useQuery({
+    queryKey: ['session'],
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/login');
+        return null;
+      }
+      return session;
+    },
+  });
+
+  // Fetch user role if authenticated
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (session?.user?.id) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profile?.role !== 'admin' && profile?.role !== 'mentor') {
+          toast.error('Unauthorized: Only admins and mentors can create courses');
+          navigate('/dashboard');
+          return;
+        }
+        
+        setUserRole(profile?.role);
+      }
+    };
+
+    fetchUserRole();
+  }, [session, navigate]);
 
   const [formData, setFormData] = useState<CourseFormData>({
     title: "",
@@ -33,12 +70,18 @@ export default function CourseForm() {
 
   const mutation = useMutation({
     mutationFn: async (data: CourseFormData) => {
+      if (!session?.user?.id) {
+        throw new Error('User not authenticated');
+      }
+
       const { error } = await supabase
         .from('courses')
         .insert({
           ...data,
           price: data.price ? parseFloat(data.price) : null,
-          status: 'draft'
+          status: 'draft',
+          created_by: session.user.id,
+          mentor_id: session.user.id
         });
       
       if (error) throw error;
@@ -49,8 +92,8 @@ export default function CourseForm() {
       navigate('/admin/courses');
     },
     onError: (error) => {
-      toast.error('Failed to create course');
-      console.error(error);
+      console.error('Failed to create course:', error);
+      toast.error('Failed to create course. Please make sure you have the correct permissions.');
     },
   });
 
@@ -58,6 +101,11 @@ export default function CourseForm() {
     e.preventDefault();
     mutation.mutate(formData);
   };
+
+  // Only render the form if user has appropriate role
+  if (!userRole || (userRole !== 'admin' && userRole !== 'mentor')) {
+    return null;
+  }
 
   return (
     <div className="container mx-auto py-8 space-y-8">

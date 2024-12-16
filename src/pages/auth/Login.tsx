@@ -31,8 +31,8 @@ const Login = () => {
         console.log('User signed out');
       }
 
-      // Handle auth errors
-      if (event === 'PASSWORD_RECOVERY_EMAIL_SENT' || event === 'USER_UPDATED') {
+      // Handle auth events
+      if (event === 'PASSWORD_RECOVERY' || event === 'USER_UPDATED') {
         console.error('Auth event:', event);
         toast({
           variant: "destructive",

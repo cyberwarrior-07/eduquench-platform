@@ -7,6 +7,7 @@ import { AdminSidebar } from "@/components/AdminSidebar";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Outlet } from "react-router-dom";
+import { ThemeProvider } from "next-themes";
 
 // Pages
 import Index from "@/pages/Index";
@@ -66,33 +67,35 @@ function AdminLayout() {
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/cms/login" element={<CMSLogin />} />
-          
-          <Route element={<StudentLayout />}>
-            <Route path="/dashboard" element={<StudentDashboard />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/courses" element={<Courses />} />
-            <Route path="/courses/:id" element={<CourseDetail />} />
-            <Route path="/courses/:id/content" element={<CourseContent />} />
-            <Route path="/live-sessions" element={<LiveSessions />} />
-          </Route>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/cms/login" element={<CMSLogin />} />
+            
+            <Route element={<StudentLayout />}>
+              <Route path="/dashboard" element={<StudentDashboard />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/courses" element={<Courses />} />
+              <Route path="/courses/:id" element={<CourseDetail />} />
+              <Route path="/courses/:id/content" element={<CourseContent />} />
+              <Route path="/live-sessions" element={<LiveSessions />} />
+            </Route>
 
-          <Route element={<AdminLayout />}>
-            <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/courses" element={<AdminCourses />} />
-            <Route path="/admin/users" element={<AdminUsers />} />
-            <Route path="/admin/settings" element={<AdminSettings />} />
-            <Route path="/admin/analytics" element={<AdminAnalytics />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-      <Toaster />
-    </QueryClientProvider>
+            <Route element={<AdminLayout />}>
+              <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/admin/courses" element={<AdminCourses />} />
+              <Route path="/admin/users" element={<AdminUsers />} />
+              <Route path="/admin/settings" element={<AdminSettings />} />
+              <Route path="/admin/analytics" element={<AdminAnalytics />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+        <Toaster />
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }

@@ -20,11 +20,11 @@ export function StudentLayout() {
             "relative border-r border-gray-200 bg-white shadow-sm transition-all duration-300 ease-in-out",
             isCollapsed ? "w-16" : "w-64"
           )}>
-            <div className="absolute right-0 top-4 -mr-3 z-20">
+            <div className="absolute -right-3 top-1/2 transform -translate-y-1/2 z-20">
               <Button
                 variant="outline"
                 size="sm"
-                className="flex h-6 w-6 items-center justify-center rounded-full p-0 shadow-md"
+                className="flex h-6 w-6 items-center justify-center rounded-full p-0 shadow-md bg-white"
                 onClick={() => setIsCollapsed(!isCollapsed)}
               >
                 <ChevronLeft

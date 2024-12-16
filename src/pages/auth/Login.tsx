@@ -14,7 +14,6 @@ export default function Login() {
   useEffect(() => {
     console.log('Login component mounted');
     
-    // Check if user is already logged in
     const checkSession = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -32,7 +31,6 @@ export default function Login() {
 
     checkSession();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       console.log('Auth state changed:', _event);
       console.log('Session data:', session);
@@ -57,7 +55,6 @@ export default function Login() {
     try {
       console.log('Fetching user profile for:', session.user.id);
       
-      // Get user role from profiles
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('role')
@@ -73,7 +70,6 @@ export default function Login() {
       console.log('User profile:', profile);
 
       if (profile) {
-        // Redirect based on role
         if (profile.role === 'admin') {
           console.log('Redirecting to admin dashboard');
           navigate('/admin');
@@ -146,6 +142,7 @@ export default function Login() {
               },
             }}
             providers={['google', 'github']}
+            redirectTo={window.location.origin}
             theme="light"
           />
         </Card>

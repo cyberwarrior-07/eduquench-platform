@@ -91,10 +91,10 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 sm:p-6 lg:p-8">
-      <Card className="w-full max-w-md border-2 border-[#1A1F2C] shadow-lg">
-        <CardHeader className="space-y-4 pb-8 border-b border-[#403E43]">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-            <LogIn className="h-7 w-7 text-primary" />
+      <Card className="w-full max-w-md border-2 border-primary-800 shadow-lg">
+        <CardHeader className="space-y-4 pb-8 border-b border-primary-200">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary-100">
+            <LogIn className="h-7 w-7 text-primary-800" />
           </div>
           <div className="space-y-2 text-center">
             <CardTitle className="text-3xl font-bold tracking-tight">
@@ -113,24 +113,24 @@ const Login = () => {
                 theme: ThemeSupa,
                 style: {
                   button: {
-                    background: 'rgb(var(--primary))',
+                    background: '#FF4500',
                     color: 'white',
                     padding: '10px',
                     borderRadius: '6px',
                     width: '100%',
                     marginTop: '10px',
-                    border: '1px solid #403E43'
+                    border: '1px solid #FF916E'
                   },
                   input: {
                     borderRadius: '6px',
                     padding: '10px',
-                    border: '1px solid #403E43',
+                    border: '1px solid #FF916E',
                     backgroundColor: 'transparent'
                   },
                   message: {
                     color: 'rgb(var(--foreground))',
                     marginBottom: '10px',
-                    border: '1px solid #403E43',
+                    border: '1px solid #FF916E',
                     borderRadius: '6px',
                     padding: '10px'
                   }
@@ -140,8 +140,8 @@ const Login = () => {
               providers={[]}
               redirectTo={window.location.origin}
             />
-            <div className="mt-4 text-center text-sm text-gray-500 border-t border-[#403E43] pt-4">
-              <p>For admin access, please use the <a href="/cms" className="text-primary hover:underline">CMS login page</a></p>
+            <div className="mt-4 text-center text-sm text-gray-500 border-t border-primary-200 pt-4">
+              <p>For admin access, please use the <a href="/cms" className="text-primary-800 hover:text-primary-900 hover:underline">CMS login page</a></p>
             </div>
           </div>
         </CardContent>

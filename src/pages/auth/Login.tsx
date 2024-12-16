@@ -91,29 +91,31 @@ const Login = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 p-4 bg-white rounded-lg shadow-sm">
           <Loader2 className="h-6 w-6 animate-spin text-primary" />
-          <span className="text-muted-foreground">Loading...</span>
+          <span className="text-muted-foreground font-medium">Loading...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-2">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-            <LogIn className="h-6 w-6 text-primary" />
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 sm:p-6 lg:p-8">
+      <Card className="w-full max-w-md border-2 shadow-lg">
+        <CardHeader className="space-y-4 pb-8">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+            <LogIn className="h-7 w-7 text-primary" />
           </div>
-          <CardTitle className="text-2xl font-semibold text-center">
-            Welcome to EduQuench
-          </CardTitle>
-          <CardDescription className="text-center">
-            Sign in to access your learning dashboard
-          </CardDescription>
+          <div className="space-y-2 text-center">
+            <CardTitle className="text-3xl font-bold tracking-tight">
+              Welcome to EduQuench
+            </CardTitle>
+            <CardDescription className="text-base">
+              Sign in to access your learning dashboard
+            </CardDescription>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pb-8">
           <Auth
             supabaseClient={supabase}
             appearance={{
@@ -122,8 +124,10 @@ const Login = () => {
                 button: {
                   background: 'var(--primary)',
                   color: 'white',
-                  borderRadius: '0.375rem',
-                  height: '2.5rem'
+                  borderRadius: '0.5rem',
+                  height: '2.75rem',
+                  fontSize: '1rem',
+                  fontWeight: '500'
                 },
                 anchor: {
                   color: 'var(--primary)',
@@ -134,22 +138,34 @@ const Login = () => {
                 },
                 divider: {
                   background: 'hsl(var(--border))',
-                  margin: '1rem 0'
+                  margin: '1.5rem 0'
                 },
                 input: {
-                  borderRadius: '0.375rem',
-                  padding: '0.625rem 0.875rem',
-                  backgroundColor: 'transparent',
-                  border: '1px solid hsl(var(--border))'
+                  borderRadius: '0.5rem',
+                  padding: '0.75rem 1rem',
+                  backgroundColor: 'white',
+                  border: '1px solid hsl(var(--border))',
+                  fontSize: '1rem'
                 },
                 message: {
-                  borderRadius: '0.375rem',
-                  padding: '0.625rem 0.875rem',
-                  marginBottom: '0.75rem'
+                  borderRadius: '0.5rem',
+                  padding: '0.75rem 1rem',
+                  marginBottom: '1rem',
+                  fontSize: '0.925rem'
                 },
                 label: {
                   color: 'hsl(var(--foreground))',
-                  marginBottom: '0.375rem'
+                  marginBottom: '0.5rem',
+                  fontSize: '0.925rem',
+                  fontWeight: '500'
+                }
+              },
+              variables: {
+                default: {
+                  colors: {
+                    brand: 'var(--primary)',
+                    brandAccent: 'var(--primary)',
+                  }
                 }
               }
             }}

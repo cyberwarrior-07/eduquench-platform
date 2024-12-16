@@ -46,7 +46,7 @@ export function StudentSidebar() {
   return (
     <div
       className={cn(
-        "relative flex flex-col h-full border-r bg-background transition-all duration-300",
+        "relative flex flex-col h-full transition-all duration-300 ease-in-out",
         isCollapsed ? "w-16" : "w-64"
       )}
     >
@@ -54,12 +54,12 @@ export function StudentSidebar() {
         <Button
           variant="ghost"
           size="icon"
-          className="-right-4 z-10 rounded-full border shadow-md bg-background"
+          className="-right-4 z-10 rounded-full border shadow-md bg-background hover:bg-gray-100"
           onClick={() => setIsCollapsed(!isCollapsed)}
         >
           <ChevronLeft
             className={cn(
-              "h-4 w-4 transition-all",
+              "h-4 w-4 transition-transform duration-300",
               isCollapsed ? "rotate-180" : "rotate-0"
             )}
           />
@@ -80,8 +80,8 @@ export function StudentSidebar() {
                 )
               }
             >
-              <link.icon className="h-4 w-4" />
-              {!isCollapsed && <span>{link.title}</span>}
+              <link.icon className="h-4 w-4 shrink-0" />
+              {!isCollapsed && <span className="truncate">{link.title}</span>}
             </NavLink>
           ))}
         </div>

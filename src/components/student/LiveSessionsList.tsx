@@ -1,11 +1,57 @@
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Clock } from "lucide-react";
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { useQuery } from '@tanstack/react-query';
 
-interface LiveSessionsListProps {
-  sessions: any[];
+interface LiveSession {
+  id: string;
+  title: string;
+  start_time: string;
+  meeting_link?: string;
+  courses?: {
+    title: string;
+  };
 }
 
-export const LiveSessionsList = ({ sessions }: LiveSessionsListProps) => {
+interface LiveSessionsListProps {
+  sessions?: LiveSession[];
+}
+
+const fetchLiveSessions = async () => {
+  console.log('Fetching live sessions...');
+  const { data, error } = await supabase
+    .from('live_sessions')
+    .select('*, courses(title)')
+    .gte('start_time', new Date().toISOString())
+    .order('start_time', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching live sessions:', error);
+    throw error;
+  }
+
+  console.log('Live sessions fetched:', data);
+  return data;
+};
+
+export const LiveSessionsList = ({ sessions: propSessions }: LiveSessionsListProps) => {
+  const { data: sessions, error, isLoading } = useQuery({
+    queryKey: ['live-sessions'],
+    queryFn: fetchLiveSessions,
+    initialData: propSessions,
+    retry: 1,
+    onError: (error) => {
+      console.error('Error in live sessions query:', error);
+      toast.error('Failed to load live sessions');
+    }
+  });
+
+  if (error) {
+    console.error('Rendering error state:', error);
+  }
+
   return (
     <Card className="col-span-full">
       <CardHeader>
@@ -16,7 +62,11 @@ export const LiveSessionsList = ({ sessions }: LiveSessionsListProps) => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {sessions?.length === 0 ? (
+          {isLoading ? (
+            <p className="text-muted-foreground text-center py-4">
+              Loading sessions...
+            </p>
+          ) : sessions?.length === 0 ? (
             <p className="text-muted-foreground text-center py-4">
               No upcoming live sessions scheduled
             </p>
@@ -31,6 +81,11 @@ export const LiveSessionsList = ({ sessions }: LiveSessionsListProps) => {
                   <p className="text-sm text-muted-foreground">
                     {new Date(session.start_time).toLocaleString()}
                   </p>
+                  {session.courses?.title && (
+                    <p className="text-sm text-muted-foreground">
+                      Course: {session.courses.title}
+                    </p>
+                  )}
                 </div>
                 {session.meeting_link && (
                   <a

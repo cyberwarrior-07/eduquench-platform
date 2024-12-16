@@ -42,15 +42,17 @@ export const LiveSessionsList = ({ sessions: propSessions }: LiveSessionsListPro
     queryFn: fetchLiveSessions,
     initialData: propSessions,
     retry: 1,
-    onError: (error) => {
-      console.error('Error in live sessions query:', error);
-      toast.error('Failed to load live sessions');
+    meta: {
+      errorMessage: 'Failed to load live sessions'
     }
   });
 
-  if (error) {
-    console.error('Rendering error state:', error);
-  }
+  useEffect(() => {
+    if (error) {
+      console.error('Error in live sessions query:', error);
+      toast.error('Failed to load live sessions');
+    }
+  }, [error]);
 
   return (
     <Card className="col-span-full">

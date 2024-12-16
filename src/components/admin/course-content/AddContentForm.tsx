@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { QuizEditor } from "./quiz/QuizEditor";
 import { Json } from "@/integrations/supabase/types";
 
 export type ContentType = "video" | "quiz" | "assignment" | "live";
@@ -78,9 +79,19 @@ export function AddContentForm({ onSubmit }: AddContentFormProps) {
             <SelectItem value="video">Video</SelectItem>
             <SelectItem value="quiz">Quiz</SelectItem>
             <SelectItem value="assignment">Assignment</SelectItem>
+            <SelectItem value="live">Live Session</SelectItem>
           </SelectContent>
         </Select>
       </div>
+
+      {formData.type === "quiz" && (
+        <QuizEditor
+          quizId={formData.id}
+          onSave={() => {
+            // Handle quiz save
+          }}
+        />
+      )}
 
       <Button type="submit">Add Content</Button>
     </form>

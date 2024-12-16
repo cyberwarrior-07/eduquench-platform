@@ -12,6 +12,7 @@ import Login from "@/pages/auth/Login";
 import CMSLogin from "@/pages/auth/CMSLogin";
 import StudentDashboard from "@/pages/student/Dashboard";
 import Settings from "@/pages/student/Settings";
+import Schedule from "@/pages/student/Schedule";
 import Courses from "@/pages/Courses";
 import CourseContent from "@/pages/CourseContent";
 import CourseDetail from "@/pages/CourseDetail";
@@ -36,6 +37,7 @@ export default function App() {
           <Route element={<StudentLayout />}>
             <Route path="/dashboard" element={<StudentDashboard />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/schedule" element={<Schedule />} />
             <Route path="/courses" element={<Courses />} />
             <Route path="/courses/:id" element={<CourseDetail />} />
             <Route path="/courses/:id/content" element={<CourseContent />} />

@@ -128,7 +128,7 @@ const Login = () => {
                   color: 'white',
                   borderRadius: '0.375rem',
                   height: '2.5rem',
-                  '&:hover': {
+                  ':hover': {
                     background: 'var(--primary-600)',
                   },
                 },

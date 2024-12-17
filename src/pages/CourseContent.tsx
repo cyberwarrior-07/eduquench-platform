@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { CourseContent, Module, VideoContent } from '@/types/courseContent';
+import { Json } from '@/integrations/supabase/types';
 
 export default function CourseContent() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -44,7 +45,13 @@ export default function CourseContent() {
         throw error;
       }
 
-      return data as CourseContent[];
+      // Transform the data to match our CourseContent type
+      return data.map((item: any) => ({
+        ...item,
+        content: typeof item.content === 'string' 
+          ? JSON.parse(item.content) 
+          : item.content
+      })) as CourseContent[];
     },
   });
 
@@ -76,7 +83,7 @@ export default function CourseContent() {
   );
 
   // Safely type cast the content to VideoContent
-  const videoContent = firstVideoContent?.content as VideoContent;
+  const videoContent = firstVideoContent?.content as VideoContent | undefined;
   const videoUrl = videoContent?.videoUrl || '';
 
   // Transform contents to modules format for sidebar
@@ -84,7 +91,7 @@ export default function CourseContent() {
     id: content.id,
     title: content.title,
     type: content.type,
-    duration: content.type === 'video' ? 0 : undefined, // You might want to store actual duration in the database
+    duration: typeof content.type === 'video' ? '10:00' : '', // Default duration for videos
     lessons: [],
   }));
 
@@ -95,7 +102,10 @@ export default function CourseContent() {
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <CourseSidebar modules={modules} />
+        <CourseSidebar 
+          modules={modules} 
+          onSelectLesson={() => {}} 
+        />
       </div>
 
       <div className={`flex-1 ${isSidebarOpen ? 'ml-72' : ''}`}>
@@ -111,7 +121,12 @@ export default function CourseContent() {
 
           <div className="space-y-4">
             <div className="aspect-video rounded-lg overflow-hidden bg-black">
-              {videoUrl && <VideoPlayer url={videoUrl} />}
+              {videoUrl && (
+                <VideoPlayer 
+                  videoUrl={videoUrl} 
+                  title={firstVideoContent?.title || ''} 
+                />
+              )}
             </div>
 
             <div className="space-y-4">
@@ -124,7 +139,7 @@ export default function CourseContent() {
                 <h2 className="text-xl font-semibold mb-2">
                   {firstVideoContent.title}
                 </h2>
-                <p>{(firstVideoContent.content as VideoContent).description}</p>
+                <p>{firstVideoContent.description}</p>
               </div>
             )}
           </div>

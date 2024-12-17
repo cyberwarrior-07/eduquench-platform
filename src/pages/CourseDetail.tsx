@@ -16,11 +16,18 @@ type CourseWithMentor = Database['public']['Tables']['courses']['Row'] & {
 };
 
 export default function CourseDetail() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   
   const { data: course, isLoading } = useQuery({
     queryKey: ['course', id],
     queryFn: async () => {
+      console.log('Fetching course with ID:', id);
+      
+      if (!id) {
+        console.error('No course ID provided');
+        throw new Error('No course ID provided');
+      }
+
       const { data, error } = await supabase
         .from('courses')
         .select(`
@@ -38,29 +45,34 @@ export default function CourseDetail() {
         toast.error('Error fetching course');
         throw error;
       }
-      
-      const courseWithMentor = data as CourseWithMentor;
+
+      console.log('Course data:', data);
       
       return {
-        ...courseWithMentor,
+        ...data,
         duration: '10 weeks', // Default value
         lessons: 12, // Default value
         level: 'Beginner', // Default value
-        enrollmentStatus: courseWithMentor.is_published ? 'Open' : 'Closed',
-        isLocked: !courseWithMentor.is_published,
+        enrollmentStatus: data.is_published ? 'Open' : 'Closed',
+        isLocked: !data.is_published,
         objectives: [],
         requirements: [],
         progress: 0,
-      };
+      } as CourseWithMentor;
     },
+    enabled: !!id, // Only run query if we have an ID
   });
 
+  if (!id) {
+    return <div className="container mx-auto py-8">No course ID provided</div>;
+  }
+
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div className="container mx-auto py-8">Loading...</div>;
   }
 
   if (!course) {
-    return <div>Course not found</div>;
+    return <div className="container mx-auto py-8">Course not found</div>;
   }
 
   return (

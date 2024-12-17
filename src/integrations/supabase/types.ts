@@ -413,6 +413,30 @@ export type Database = {
           },
         ]
       }
+      video_transcriptions: {
+        Row: {
+          created_at: string
+          id: string
+          language: string
+          transcription: Json
+          video_url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          language: string
+          transcription?: Json
+          video_url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          language?: string
+          transcription?: Json
+          video_url?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

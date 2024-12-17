@@ -73,11 +73,13 @@ export default function CMSPageList() {
   }
 
   return (
-    <div className="container mx-auto py-8 space-y-8">
-      <div className="flex justify-between items-center">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">CMS Pages</h1>
-          <p className="text-gray-500">Manage your website content</p>
+          <h1 className="text-2xl font-semibold tracking-tight">CMS Pages</h1>
+          <p className="text-sm text-muted-foreground">
+            Manage your website content
+          </p>
         </div>
         <Button onClick={() => navigate('/admin/pages/new')}>
           <Plus className="mr-2 h-4 w-4" />
@@ -85,69 +87,73 @@ export default function CMSPageList() {
         </Button>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Title</TableHead>
-            <TableHead>Slug</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Created At</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {pages?.map((page) => (
-            <TableRow key={page.id}>
-              <TableCell 
-                className="cursor-pointer"
-                onClick={() => navigate(`/admin/pages/${page.id}`)}
-              >
-                {page.title}
-              </TableCell>
-              <TableCell>{page.slug}</TableCell>
-              <TableCell>
-                <Badge variant={page.status === 'published' ? "default" : "secondary"}>
-                  {page.status}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                {new Date(page.created_at).toLocaleDateString()}
-              </TableCell>
-              <TableCell>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-destructive hover:text-destructive/90"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete the
-                        page and all its content.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        onClick={() => handleDelete(page.id)}
-                      >
-                        Delete
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </TableCell>
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Title</TableHead>
+              <TableHead>Slug</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Created At</TableHead>
+              <TableHead className="w-[70px]">Actions</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {pages?.map((page) => (
+              <TableRow key={page.id}>
+                <TableCell 
+                  className="font-medium hover:underline cursor-pointer"
+                  onClick={() => navigate(`/admin/pages/${page.id}`)}
+                >
+                  {page.title}
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  {page.slug}
+                </TableCell>
+                <TableCell>
+                  <Badge variant={page.status === 'published' ? "default" : "secondary"}>
+                    {page.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  {new Date(page.created_at).toLocaleDateString()}
+                </TableCell>
+                <TableCell>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-destructive hover:text-destructive/90"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently delete the
+                          page and all its content.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          onClick={() => handleDelete(page.id)}
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }

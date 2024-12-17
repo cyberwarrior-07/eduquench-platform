@@ -27,42 +27,42 @@ export function AdminSidebar() {
   const collapsed = state === "collapsed";
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex h-full flex-col gap-2">
       <div className="p-4">
         <Link to="/admin" className="flex items-center gap-2">
           <span className={cn(
-            "text-xl font-bold text-primary transition-all",
+            "text-lg font-semibold transition-all",
             collapsed ? "hidden" : "block"
           )}>
-            ADMIN CMS
+            Admin
           </span>
         </Link>
       </div>
 
       <div className={cn(
-        "flex items-center gap-3 mx-4 rounded-lg border bg-gray-50 p-3",
+        "mx-4 flex items-center gap-3 rounded-md border bg-card p-3",
         collapsed ? "justify-center" : ""
       )}>
-        <Avatar>
+        <Avatar className="h-8 w-8">
           <AvatarImage src="/placeholder.svg" />
           <AvatarFallback>AD</AvatarFallback>
         </Avatar>
         {!collapsed && (
           <div className="flex flex-col">
-            <span className="font-medium text-gray-900">Admin</span>
-            <span className="text-sm text-gray-500">Administrator</span>
+            <span className="text-sm font-medium">Admin</span>
+            <span className="text-xs text-muted-foreground">Administrator</span>
           </div>
         )}
       </div>
 
-      <ScrollArea className="flex-1 p-4">
-        <div className="space-y-2">
+      <ScrollArea className="flex-1">
+        <div className="space-y-1 p-2">
           {navigation.map((item) => (
             <Link
               key={item.href}
               to={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
+                "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
                 location.pathname === item.href
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -78,8 +78,9 @@ export function AdminSidebar() {
       <div className="p-4">
         <Button
           variant="ghost"
+          size="sm"
           className={cn(
-            "w-full justify-start gap-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900",
+            "w-full justify-start gap-2",
             collapsed && "justify-center"
           )}
         >

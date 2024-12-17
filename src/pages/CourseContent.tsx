@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import type { CourseContent, Module, VideoContent } from '@/types/courseContent';
+import type { CourseContent, Module, VideoContent, Lesson } from '@/types/courseContent';
 import { Json } from '@/integrations/supabase/types';
 
 export default function CourseContent() {
@@ -87,13 +87,31 @@ export default function CourseContent() {
   const videoUrl = videoContent?.videoUrl || '';
 
   // Transform contents to modules format for sidebar
-  const modules: Module[] = contents.map((content: CourseContent) => ({
-    id: content.id,
-    title: content.title,
-    type: content.type,
-    duration: typeof content.type === 'video' ? '10:00' : '', // Default duration for videos
-    lessons: [],
-  }));
+  const modules: Module[] = contents.reduce((acc: Module[], content: CourseContent) => {
+    // Convert content to lesson format
+    const lesson: Lesson = {
+      id: content.id,
+      title: content.title,
+      duration: content.type === 'video' ? '10:00' : '5:00', // Default durations
+      type: content.type === 'chapter' ? 'reading' : content.type as 'video' | 'quiz' | 'reading',
+      isCompleted: false // You might want to fetch this from student progress
+    };
+
+    // If this is the first item or a new module, create a new module
+    if (acc.length === 0 || acc[acc.length - 1].lessons.length >= 5) { // Group lessons into modules of 5
+      acc.push({
+        id: `module-${acc.length + 1}`,
+        title: `Module ${acc.length + 1}`,
+        duration: '1 week', // Default module duration
+        lessons: [lesson]
+      });
+    } else {
+      // Add lesson to the current module
+      acc[acc.length - 1].lessons.push(lesson);
+    }
+
+    return acc;
+  }, []);
 
   return (
     <div className="flex h-screen bg-background">

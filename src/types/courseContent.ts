@@ -28,10 +28,17 @@ export interface CourseContent {
   updated_at: string;
 }
 
+export interface Lesson {
+  id: string;
+  title: string;
+  duration: string;
+  type: 'video' | 'quiz' | 'reading';
+  isCompleted?: boolean;
+}
+
 export interface Module {
   id: string;
   title: string;
-  type: 'video' | 'quiz' | 'chapter' | 'lesson';
   duration: string;
-  lessons: Module[];
+  lessons: Lesson[];
 }

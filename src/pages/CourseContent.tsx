@@ -7,7 +7,7 @@ import { useParams, Navigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { CourseContent, Module, VideoContent } from '@/types/courseContent';
+import type { CourseContent, Module, VideoContent } from '@/types/courseContent';
 
 export default function CourseContent() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -99,7 +99,8 @@ export default function CourseContent() {
     (content: CourseContent) => content.type === 'video'
   );
 
-  const videoContent = firstVideoContent?.content as VideoContent;
+  // Safely type cast the content to VideoContent
+  const videoContent = firstVideoContent?.content as unknown as VideoContent;
   const videoUrl = videoContent?.videoUrl || '';
 
   return (

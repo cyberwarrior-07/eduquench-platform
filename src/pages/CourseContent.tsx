@@ -7,12 +7,11 @@ import { useParams, Navigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { CourseContent, Module, VideoContent } from '@/types/courseContent';
 
 export default function CourseContent() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { id } = useParams();
-
-  console.log('Course ID from params:', id);
 
   const { data: course, isLoading, error } = useQuery({
     queryKey: ['course', id],
@@ -36,7 +35,8 @@ export default function CourseContent() {
             id,
             title,
             type,
-            content
+            content,
+            description
           )
         `)
         .eq('id', id)
@@ -48,7 +48,6 @@ export default function CourseContent() {
         throw error;
       }
 
-      console.log('Course data:', data);
       return data;
     },
   });
@@ -74,12 +73,34 @@ export default function CourseContent() {
     return <Navigate to="/courses" replace />;
   }
 
+  // Transform course content into modules format expected by CourseSidebar
+  const transformContentToModules = (content: CourseContent[]): Module[] => {
+    // Group content by type 'chapter'
+    const chapters = content.filter(item => item.type === 'chapter');
+    
+    return chapters.map(chapter => ({
+      id: chapter.id,
+      title: chapter.title,
+      duration: '1h', // You might want to calculate this based on actual content
+      lessons: content
+        .filter(item => item.type !== 'chapter')
+        .map(item => ({
+          id: item.id,
+          title: item.title,
+          duration: '10min', // You might want to calculate this based on actual content
+          type: item.type === 'video' ? 'video' : 'quiz',
+          isCompleted: false // You might want to fetch this from student progress
+        }))
+    }));
+  };
+
   // Find the first video content
   const firstVideoContent = course.course_content?.find(
-    (content: any) => content.type === 'video'
+    (content: CourseContent) => content.type === 'video'
   );
 
-  const videoUrl = firstVideoContent?.content?.videoUrl || '';
+  const videoContent = firstVideoContent?.content as VideoContent;
+  const videoUrl = videoContent?.videoUrl || '';
 
   return (
     <div className="min-h-screen bg-background">
@@ -121,7 +142,7 @@ export default function CourseContent() {
                   {firstVideoContent.title}
                 </h2>
                 <p className="text-muted-foreground">
-                  {firstVideoContent.content?.description}
+                  {videoContent?.description}
                 </p>
               </div>
             )}
@@ -134,7 +155,7 @@ export default function CourseContent() {
           }`}
         >
           <CourseSidebar
-            modules={course.course_content || []}
+            modules={transformContentToModules(course.course_content || [])}
             onSelectLesson={() => {}}
             className="h-full overflow-y-auto"
           />

@@ -10,6 +10,10 @@ import {
   Settings,
   Maximize2,
   Minimize2,
+  MessageSquare,
+  FileText,
+  ClipboardList,
+  Brain,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -40,6 +44,26 @@ export function StudentSidebar({ isCollapsed }: StudentSidebarProps) {
       title: "Schedule",
       icon: CalendarDays,
       href: "/student/schedule",
+    },
+    {
+      title: "Discussions",
+      icon: MessageSquare,
+      href: "/student/discussions",
+    },
+    {
+      title: "Resources",
+      icon: FileText,
+      href: "/student/resources",
+    },
+    {
+      title: "Assignments",
+      icon: ClipboardList,
+      href: "/student/assignments",
+    },
+    {
+      title: "Quizzes",
+      icon: Brain,
+      href: "/student/quizzes",
     },
     {
       title: "Settings",
@@ -77,7 +101,7 @@ export function StudentSidebar({ isCollapsed }: StudentSidebarProps) {
         )}
       </div>
       
-      <ScrollArea className="h-[calc(100%-4rem)] px-3">
+      <ScrollArea className="h-[calc(100vh-4rem)] px-3">
         <nav className="space-y-1 py-4">
           {links.map((link) => (
             <NavLink

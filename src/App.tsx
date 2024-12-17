@@ -16,6 +16,10 @@ import LiveSessions from "@/pages/student/LiveSessions";
 import StudentQuizzes from "@/pages/student/Quizzes";
 import StudentSchedule from "@/pages/student/Schedule";
 import StudentSettings from "@/pages/student/Settings";
+import Discussions from "@/pages/Discussions";
+import Resources from "@/pages/Resources";
+import Assignments from "@/pages/Assignments";
+import Quizzes from "@/pages/Quizzes";
 
 export default function App() {
   return (
@@ -34,6 +38,9 @@ export default function App() {
           <Route path="quizzes" element={<StudentQuizzes />} />
           <Route path="schedule" element={<StudentSchedule />} />
           <Route path="settings" element={<StudentSettings />} />
+          <Route path="discussions" element={<Discussions />} />
+          <Route path="resources" element={<Resources />} />
+          <Route path="assignments" element={<Assignments />} />
         </Route>
 
         {/* Admin routes */}

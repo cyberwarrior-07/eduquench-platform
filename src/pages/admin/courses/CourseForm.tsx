@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -20,8 +20,10 @@ interface CourseFormData {
 
 export default function CourseForm() {
   const navigate = useNavigate();
+  const { id } = useParams();
   const queryClient = useQueryClient();
   const [userRole, setUserRole] = useState<string | null>(null);
+  const isEditing = Boolean(id);
 
   // Check user authentication and role
   const { data: session } = useQuery({
@@ -36,6 +38,23 @@ export default function CourseForm() {
     },
   });
 
+  // Fetch course data if editing
+  const { data: courseData } = useQuery({
+    queryKey: ['course', id],
+    queryFn: async () => {
+      if (!id) return null;
+      const { data, error } = await supabase
+        .from('courses')
+        .select('*')
+        .eq('id', id)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: Boolean(id),
+  });
+
   // Fetch user role if authenticated
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -47,7 +66,7 @@ export default function CourseForm() {
           .single();
 
         if (profile?.role !== 'admin' && profile?.role !== 'mentor') {
-          toast.error('Unauthorized: Only admins and mentors can create courses');
+          toast.error('Unauthorized: Only admins and mentors can manage courses');
           navigate('/dashboard');
           return;
         }
@@ -68,32 +87,59 @@ export default function CourseForm() {
     thumbnail_url: "",
   });
 
+  // Update form data when course data is loaded
+  useEffect(() => {
+    if (courseData) {
+      setFormData({
+        title: courseData.title,
+        description: courseData.description || "",
+        price: courseData.price?.toString() || "",
+        currency: courseData.currency || "INR",
+        is_published: courseData.is_published || false,
+        thumbnail_url: courseData.thumbnail_url || "",
+      });
+    }
+  }, [courseData]);
+
   const mutation = useMutation({
     mutationFn: async (data: CourseFormData) => {
       if (!session?.user?.id) {
         throw new Error('User not authenticated');
       }
 
-      const { error } = await supabase
-        .from('courses')
-        .insert({
-          ...data,
-          price: data.price ? parseFloat(data.price) : null,
-          status: 'draft',
-          created_by: session.user.id,
-          mentor_id: session.user.id
-        });
-      
-      if (error) throw error;
+      if (isEditing) {
+        const { error } = await supabase
+          .from('courses')
+          .update({
+            ...data,
+            price: data.price ? parseFloat(data.price) : null,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', id);
+        
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('courses')
+          .insert({
+            ...data,
+            price: data.price ? parseFloat(data.price) : null,
+            status: 'draft',
+            created_by: session.user.id,
+            mentor_id: session.user.id
+          });
+        
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-courses'] });
-      toast.success('Course created successfully');
+      toast.success(`Course ${isEditing ? 'updated' : 'created'} successfully`);
       navigate('/admin/courses');
     },
     onError: (error) => {
-      console.error('Failed to create course:', error);
-      toast.error('Failed to create course. Please make sure you have the correct permissions.');
+      console.error('Failed to save course:', error);
+      toast.error('Failed to save course. Please make sure you have the correct permissions.');
     },
   });
 
@@ -108,11 +154,13 @@ export default function CourseForm() {
   }
 
   return (
-    <div className="container mx-auto py-8 space-y-8">
+    <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">New Course</h1>
-        <p className="text-muted-foreground">
-          Create a new course and add content
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {isEditing ? 'Edit Course' : 'New Course'}
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          {isEditing ? 'Update course details and content' : 'Create a new course and add content'}
         </p>
       </div>
 
@@ -128,7 +176,7 @@ export default function CourseForm() {
               <CourseBasicInfo
                 formData={formData}
                 setFormData={setFormData}
-                isEditing={false}
+                isEditing={isEditing}
               />
             </Card>
           </TabsContent>
@@ -141,7 +189,9 @@ export default function CourseForm() {
         </Tabs>
 
         <div className="flex gap-4">
-          <Button type="submit">Create Course</Button>
+          <Button type="submit">
+            {isEditing ? 'Update Course' : 'Create Course'}
+          </Button>
           <Button
             type="button"
             variant="outline"

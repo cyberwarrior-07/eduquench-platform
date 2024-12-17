@@ -65,14 +65,27 @@ export default function CourseContent() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { id } = useParams();
 
-  const { data: course, isLoading } = useQuery({
+  console.log('Course ID from params:', id); // Debug log
+
+  const { data: course, isLoading, error } = useQuery({
     queryKey: ['course', id],
     queryFn: async () => {
-      if (!id) return null;
+      if (!id) {
+        console.error('No course ID provided');
+        throw new Error('No course ID provided');
+      }
+      
+      console.log('Fetching course with ID:', id); // Debug log
       
       const { data, error } = await supabase
         .from('courses')
-        .select('*')
+        .select(`
+          *,
+          mentor:profiles!courses_mentor_id_fkey (
+            username,
+            avatar_url
+          )
+        `)
         .eq('id', id)
         .single();
       
@@ -81,10 +94,18 @@ export default function CourseContent() {
         toast.error('Error fetching course');
         throw error;
       }
+
+      console.log('Course data:', data); // Debug log
       return data;
     },
-    enabled: !!id,
+    enabled: !!id, // Only run query if we have an ID
   });
+
+  if (error) {
+    console.error('Query error:', error);
+    toast.error('Failed to load course');
+    return <Navigate to="/courses" replace />;
+  }
 
   if (isLoading) {
     return <div className="p-8">Loading...</div>;
@@ -141,7 +162,7 @@ export default function CourseContent() {
             <VideoPlayer
               videoUrl="/path-to-video.mp4"
               title={selectedLesson.title}
-              instructor={course.mentor_id || 'TBD'}
+              instructor={course.mentor?.username || 'TBD'}
             />
             
             <div className="prose max-w-none">

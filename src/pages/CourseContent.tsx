@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { VideoPlayer } from '@/components/VideoPlayer';
 import { CourseSidebar } from '@/components/CourseSidebar';
 import { Button } from '@/components/ui/button';
-import { MessageCircle, Menu } from 'lucide-react';
-import { useParams, Navigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,40 +10,19 @@ import type { CourseContent, Module, VideoContent } from '@/types/courseContent'
 
 export default function CourseContent() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const { id } = useParams();
+  const { courseId } = useParams();
 
-  const { data: course, isLoading, error } = useQuery({
-    queryKey: ['course', id],
+  const { data: course, isLoading: courseLoading } = useQuery({
+    queryKey: ['course', courseId],
     queryFn: async () => {
-      if (!id) {
-        console.error('No course ID provided');
-        throw new Error('No course ID provided');
-      }
-      
-      console.log('Fetching course with ID:', id);
-      
       const { data, error } = await supabase
         .from('courses')
-        .select(`
-          *,
-          mentor:profiles!courses_mentor_id_fkey (
-            username,
-            avatar_url
-          ),
-          course_content (
-            id,
-            title,
-            type,
-            content,
-            description
-          )
-        `)
-        .eq('id', id)
+        .select('*')
+        .eq('id', courseId)
         .single();
-      
+
       if (error) {
-        console.error('Error fetching course:', error);
-        toast.error('Error fetching course');
+        toast.error('Failed to load course');
         throw error;
       }
 
@@ -52,114 +30,104 @@ export default function CourseContent() {
     },
   });
 
-  if (error) {
-    console.error('Query error:', error);
-    toast.error('Failed to load course');
-    return <Navigate to="/courses" replace />;
-  }
+  const { data: contents = [], isLoading: contentsLoading } = useQuery({
+    queryKey: ['course-contents', courseId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('course_content')
+        .select('*')
+        .eq('course_id', courseId)
+        .order('order_index');
 
-  if (isLoading) {
+      if (error) {
+        toast.error('Failed to load course content');
+        throw error;
+      }
+
+      return data as CourseContent[];
+    },
+  });
+
+  if (courseLoading || contentsLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-pulse space-y-4">
-          <div className="h-64 bg-gray-200 rounded-lg w-full max-w-4xl"></div>
-          <div className="h-8 bg-gray-200 rounded w-48"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4">Loading course content...</p>
         </div>
       </div>
     );
   }
 
   if (!course) {
-    return <Navigate to="/courses" replace />;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-2">Course Not Found</h2>
+          <p className="text-gray-600">The course you're looking for doesn't exist.</p>
+        </div>
+      </div>
+    );
   }
 
-  // Transform course content into modules format expected by CourseSidebar
-  const transformContentToModules = (content: CourseContent[]): Module[] => {
-    // Group content by type 'chapter'
-    const chapters = content.filter(item => item.type === 'chapter');
-    
-    return chapters.map(chapter => ({
-      id: chapter.id,
-      title: chapter.title,
-      duration: '1h', // You might want to calculate this based on actual content
-      lessons: content
-        .filter(item => item.type !== 'chapter')
-        .map(item => ({
-          id: item.id,
-          title: item.title,
-          duration: '10min', // You might want to calculate this based on actual content
-          type: item.type === 'video' ? 'video' : 'quiz',
-          isCompleted: false // You might want to fetch this from student progress
-        }))
-    }));
-  };
-
   // Find the first video content
-  const firstVideoContent = course.course_content?.find(
+  const firstVideoContent = contents.find(
     (content: CourseContent) => content.type === 'video'
   );
 
   // Safely type cast the content to VideoContent
-  const videoContent = firstVideoContent?.content as unknown as VideoContent;
+  const videoContent = firstVideoContent?.content as VideoContent;
   const videoUrl = videoContent?.videoUrl || '';
 
+  // Transform contents to modules format for sidebar
+  const modules: Module[] = contents.map((content: CourseContent) => ({
+    id: content.id,
+    title: content.title,
+    type: content.type,
+    duration: content.type === 'video' ? 0 : undefined, // You might want to store actual duration in the database
+    lessons: [],
+  }));
+
   return (
-    <div className="min-h-screen bg-background">
-      <div className="flex items-center justify-between p-4 border-b">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        >
-          <Menu className="h-5 w-5" />
-        </Button>
-        <div className="flex items-center gap-4">
-          <Button variant="outline" className="gap-2">
-            <MessageCircle className="h-4 w-4" />
-            Ask a Question
-          </Button>
-        </div>
+    <div className="flex h-screen bg-background">
+      <div
+        className={`fixed inset-y-0 left-0 z-50 w-72 transform transition-transform duration-300 ease-in-out ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <CourseSidebar modules={modules} />
       </div>
 
-      <div className="flex">
-        <div className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'mr-80' : ''}`}>
-          <div className="max-w-5xl mx-auto p-6 space-y-6">
-            <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-lg">
-              <VideoPlayer
-                videoUrl={videoUrl}
-                title={firstVideoContent?.title || course.title}
-                instructor={course.mentor?.username}
-              />
+      <div className={`flex-1 ${isSidebarOpen ? 'ml-72' : ''}`}>
+        <div className="p-4">
+          <Button
+            variant="outline"
+            size="icon"
+            className="mb-4"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          >
+            {isSidebarOpen ? '←' : '→'}
+          </Button>
+
+          <div className="space-y-4">
+            <div className="aspect-video rounded-lg overflow-hidden bg-black">
+              {videoUrl && <VideoPlayer url={videoUrl} />}
             </div>
-            
-            <div className="prose max-w-none dark:prose-invert">
-              <h1 className="text-3xl font-bold">{course.title}</h1>
-              <p className="text-muted-foreground">{course.description}</p>
+
+            <div className="space-y-4">
+              <h1 className="text-2xl font-bold">{course.title}</h1>
+              <p className="text-gray-600">{course.description}</p>
             </div>
 
             {firstVideoContent && (
-              <div className="prose max-w-none dark:prose-invert">
-                <h2 className="text-2xl font-semibold">
+              <div className="prose max-w-none">
+                <h2 className="text-xl font-semibold mb-2">
                   {firstVideoContent.title}
                 </h2>
-                <p className="text-muted-foreground">
-                  {videoContent?.description}
-                </p>
+                <p>{(firstVideoContent.content as VideoContent).description}</p>
               </div>
             )}
           </div>
-        </div>
-
-        <div
-          className={`fixed right-0 top-[73px] h-[calc(100vh-73px)] w-80 bg-background border-l transition-transform duration-300 transform ${
-            isSidebarOpen ? 'translate-x-0' : 'translate-x-full'
-          }`}
-        >
-          <CourseSidebar
-            modules={transformContentToModules(course.course_content || [])}
-            onSelectLesson={() => {}}
-            className="h-full overflow-y-auto"
-          />
         </div>
       </div>
     </div>

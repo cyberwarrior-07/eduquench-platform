@@ -24,27 +24,27 @@ export function StudentSidebar({ isCollapsed }: StudentSidebarProps) {
     {
       title: "Dashboard",
       icon: LayoutDashboard,
-      href: "/dashboard",
+      href: "/student/dashboard",
     },
     {
       title: "Available Courses",
       icon: BookOpen,
-      href: "/courses",
+      href: "/student/courses",
     },
     {
       title: "Live Sessions",
       icon: GraduationCap,
-      href: "/live-sessions",
+      href: "/student/live-sessions",
     },
     {
       title: "Schedule",
       icon: CalendarDays,
-      href: "/schedule",
+      href: "/student/schedule",
     },
     {
       title: "Settings",
       icon: Settings,
-      href: "/settings",
+      href: "/student/settings",
     },
   ];
 

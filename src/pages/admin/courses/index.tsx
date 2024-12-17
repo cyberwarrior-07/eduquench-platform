@@ -1,17 +1,27 @@
-import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import CourseList from "./CourseList";
 
 export default function AdminCourses() {
+  const navigate = useNavigate();
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Courses</h1>
-        <p className="text-sm text-muted-foreground">
-          Manage your courses
-        </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Courses</h1>
+          <p className="text-sm text-muted-foreground">
+            Manage your courses and their content
+          </p>
+        </div>
+        <Button onClick={() => navigate("/admin/courses/new")}>
+          <Plus className="mr-2 h-4 w-4" />
+          New Course
+        </Button>
       </div>
-      <Card className="p-6">
-        <p>Courses management coming soon...</p>
-      </Card>
+
+      <CourseList />
     </div>
   );
 }

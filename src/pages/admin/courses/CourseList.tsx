@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   Table,
@@ -74,83 +74,70 @@ export default function CourseList() {
   }
 
   return (
-    <div className="container mx-auto py-8 space-y-8">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Courses</h1>
-          <p className="text-gray-500">Manage your courses and their content</p>
-        </div>
-        <Button onClick={() => navigate('/admin/courses/new')}>
-          <Plus className="mr-2 h-4 w-4" />
-          New Course
-        </Button>
-      </div>
-
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Title</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Price</TableHead>
-            <TableHead>Created At</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {courses?.map((course) => (
-            <TableRow key={course.id}>
-              <TableCell 
-                className="cursor-pointer"
-                onClick={() => navigate(`/admin/courses/${course.id}`)}
-              >
-                {course.title}
-              </TableCell>
-              <TableCell>
-                <Badge variant={course.is_published ? "default" : "secondary"}>
-                  {course.is_published ? "Published" : "Draft"}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                {course.price ? formatCurrency(course.price, course.currency) : "Free"}
-              </TableCell>
-              <TableCell>
-                {new Date(course.created_at).toLocaleDateString()}
-              </TableCell>
-              <TableCell>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-destructive hover:text-destructive/90"
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Title</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Price</TableHead>
+          <TableHead>Created At</TableHead>
+          <TableHead>Actions</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {courses?.map((course) => (
+          <TableRow key={course.id}>
+            <TableCell 
+              className="cursor-pointer"
+              onClick={() => navigate(`/admin/courses/${course.id}`)}
+            >
+              {course.title}
+            </TableCell>
+            <TableCell>
+              <Badge variant={course.is_published ? "default" : "secondary"}>
+                {course.is_published ? "Published" : "Draft"}
+              </Badge>
+            </TableCell>
+            <TableCell>
+              {course.price ? formatCurrency(course.price, course.currency) : "Free"}
+            </TableCell>
+            <TableCell>
+              {new Date(course.created_at).toLocaleDateString()}
+            </TableCell>
+            <TableCell>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-destructive hover:text-destructive/90"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete the
+                      course and all associated content.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      onClick={() => handleDelete(course.id)}
                     >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete the
-                        course and all associated content.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        onClick={() => handleDelete(course.id)}
-                      >
-                        Delete
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 }

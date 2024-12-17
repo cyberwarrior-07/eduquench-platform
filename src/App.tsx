@@ -4,10 +4,11 @@ import AdminDashboard from "@/pages/admin/AdminDashboard";
 import CMSPages from "@/pages/admin/cms/index";
 import CMSPageForm from "@/components/admin/cms/CMSPageForm";
 import AdminCourses from "@/pages/admin/courses";
+import CourseForm from "@/pages/admin/courses/CourseForm";
 import AdminUsers from "@/pages/admin/users";
 import AdminSettings from "@/pages/admin/Settings";
 
-function App() {
+export default function App() {
   return (
     <BrowserRouter>
       <Routes>
@@ -16,6 +17,8 @@ function App() {
           <Route path="pages" element={<CMSPages />} />
           <Route path="pages/new" element={<CMSPageForm />} />
           <Route path="courses" element={<AdminCourses />} />
+          <Route path="courses/new" element={<CourseForm />} />
+          <Route path="courses/:id" element={<CourseForm />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="settings" element={<AdminSettings />} />
         </Route>
@@ -23,5 +26,3 @@ function App() {
     </BrowserRouter>
   );
 }
-
-export default App;

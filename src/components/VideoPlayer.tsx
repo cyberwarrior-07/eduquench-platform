@@ -1,7 +1,6 @@
 import React from 'react';
 import { Card } from './ui/card';
 import { Progress } from './ui/progress';
-import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { VideoControls } from './video-player/VideoControls';
@@ -72,6 +71,32 @@ export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) =
     }
   };
 
+  const fetchTranscription = async (language: string) => {
+    try {
+      const { data: existingTranscription } = await supabase
+        .from('video_transcriptions')
+        .select('transcription')
+        .eq('video_url', videoUrl)
+        .eq('language', language)
+        .single();
+
+      if (existingTranscription?.transcription) {
+        console.log('Found existing transcription for language:', language);
+        const transcriptionData = Array.isArray(existingTranscription.transcription) 
+          ? existingTranscription.transcription 
+          : JSON.parse(existingTranscription.transcription as string);
+        
+        setTranscript(transcriptionData);
+        toast.success('Transcription loaded');
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error fetching transcription:', error);
+      return false;
+    }
+  };
+
   const handleTranscribe = async () => {
     if (!videoUrl) {
       toast.error('No video URL provided');
@@ -83,22 +108,9 @@ export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) =
       console.log('Starting transcription for:', videoUrl);
       
       // First check if we already have a transcription
-      const { data: existingTranscription } = await supabase
-        .from('video_transcriptions')
-        .select('transcription')
-        .eq('video_url', videoUrl)
-        .eq('language', selectedLanguage)
-        .single();
-
-      if (existingTranscription?.transcription) {
-        console.log('Found existing transcription');
-        // Ensure we're handling the transcription data as an array
-        const transcriptionData = Array.isArray(existingTranscription.transcription) 
-          ? existingTranscription.transcription 
-          : JSON.parse(existingTranscription.transcription as string);
-        
-        setTranscript(transcriptionData);
-        toast.success('Transcription loaded');
+      const hasExisting = await fetchTranscription(selectedLanguage);
+      if (hasExisting) {
+        setIsTranscribing(false);
         return;
       }
 
@@ -109,7 +121,6 @@ export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) =
 
       if (transcriptionError) throw transcriptionError;
 
-      // Ensure transcriptionData.transcription is an array before storing
       const transcriptionArray = Array.isArray(transcriptionData.transcription)
         ? transcriptionData.transcription
         : JSON.parse(transcriptionData.transcription as string);
@@ -135,10 +146,15 @@ export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) =
     }
   };
 
-  const handleLanguageChange = (value: string) => {
+  const handleLanguageChange = async (value: string) => {
     setSelectedLanguage(value);
-    if (transcript.length > 0) {
-      handleTranscribe();
+    if (videoUrl) {
+      setIsTranscribing(true);
+      const hasExisting = await fetchTranscription(value);
+      if (!hasExisting) {
+        handleTranscribe();
+      }
+      setIsTranscribing(false);
     }
   };
 

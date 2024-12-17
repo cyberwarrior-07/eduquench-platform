@@ -51,7 +51,7 @@ export default function CourseContent() {
         content: typeof item.content === 'string' 
           ? JSON.parse(item.content) 
           : item.content
-      })) as CourseContent[];
+      }));
     },
   });
 

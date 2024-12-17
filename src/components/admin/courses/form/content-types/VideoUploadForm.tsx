@@ -23,8 +23,16 @@ export function VideoUploadForm({ onUploadComplete }: VideoUploadFormProps) {
       return;
     }
 
+    // Check file size (100MB limit)
+    const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB in bytes
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error('File size must be less than 100MB');
+      return;
+    }
+
     setIsUploading(true);
     try {
+      console.log('Starting video upload:', file.name);
       const fileExt = file.name.split('.').pop();
       const filePath = `${crypto.randomUUID()}.${fileExt}`;
 
@@ -35,12 +43,18 @@ export function VideoUploadForm({ onUploadComplete }: VideoUploadFormProps) {
           upsert: false
         });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        throw uploadError;
+      }
+
+      console.log('Video uploaded successfully');
 
       const { data: { publicUrl } } = supabase.storage
         .from('course-videos')
         .getPublicUrl(filePath);
 
+      console.log('Public URL generated:', publicUrl);
       onUploadComplete(publicUrl);
       toast.success('Video uploaded successfully');
     } catch (error) {
@@ -79,6 +93,9 @@ export function VideoUploadForm({ onUploadComplete }: VideoUploadFormProps) {
             disabled={isUploading}
           />
         </div>
+        <p className="text-sm text-muted-foreground mt-2">
+          Maximum file size: 100MB. Supported formats: MP4, WebM, MOV
+        </p>
       </div>
     </div>
   );

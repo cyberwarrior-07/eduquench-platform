@@ -8,12 +8,22 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Database } from "@/integrations/supabase/types";
 
-type CourseWithMentor = Database['public']['Tables']['courses']['Row'] & {
+type BaseCourseType = Database['public']['Tables']['courses']['Row'];
+
+interface CourseWithMentor extends BaseCourseType {
   mentor: {
     username: string | null;
     avatar_url: string | null;
   } | null;
-};
+  duration: string;
+  lessons: number;
+  level: string;
+  enrollmentStatus: string;
+  isLocked: boolean;
+  objectives: string[];
+  requirements: string[];
+  progress: number;
+}
 
 export default function CourseDetail() {
   const { id } = useParams<{ id: string }>();
@@ -48,7 +58,8 @@ export default function CourseDetail() {
 
       console.log('Course data:', data);
       
-      return {
+      // Transform the data into CourseWithMentor type
+      const courseWithMentor: CourseWithMentor = {
         ...data,
         duration: '10 weeks', // Default value
         lessons: 12, // Default value
@@ -58,7 +69,9 @@ export default function CourseDetail() {
         objectives: [],
         requirements: [],
         progress: 0,
-      } as CourseWithMentor;
+      };
+
+      return courseWithMentor;
     },
     enabled: !!id, // Only run query if we have an ID
   });

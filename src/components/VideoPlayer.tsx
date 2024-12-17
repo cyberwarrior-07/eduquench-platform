@@ -14,12 +14,18 @@ interface VideoPlayerProps {
   instructor?: string;
 }
 
+interface TranscriptSegment {
+  start: number;
+  end: number;
+  text: string;
+}
+
 export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) => {
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [progress, setProgress] = React.useState(0);
   const [volume, setVolume] = React.useState(1);
   const [isMuted, setIsMuted] = React.useState(false);
-  const [transcript, setTranscript] = React.useState<any[]>([]);
+  const [transcript, setTranscript] = React.useState<TranscriptSegment[]>([]);
   const [selectedLanguage, setSelectedLanguage] = React.useState('en');
   const [isTranscribing, setIsTranscribing] = React.useState(false);
   const videoRef = React.useRef<HTMLVideoElement>(null);
@@ -84,9 +90,14 @@ export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) =
         .eq('language', selectedLanguage)
         .single();
 
-      if (existingTranscription) {
+      if (existingTranscription?.transcription) {
         console.log('Found existing transcription');
-        setTranscript(existingTranscription.transcription);
+        // Ensure we're handling the transcription data as an array
+        const transcriptionData = Array.isArray(existingTranscription.transcription) 
+          ? existingTranscription.transcription 
+          : JSON.parse(existingTranscription.transcription as string);
+        
+        setTranscript(transcriptionData);
         toast.success('Transcription loaded');
         return;
       }
@@ -98,18 +109,23 @@ export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) =
 
       if (transcriptionError) throw transcriptionError;
 
+      // Ensure transcriptionData.transcription is an array before storing
+      const transcriptionArray = Array.isArray(transcriptionData.transcription)
+        ? transcriptionData.transcription
+        : JSON.parse(transcriptionData.transcription as string);
+
       // Store the transcription
       const { error: insertError } = await supabase
         .from('video_transcriptions')
         .insert({
           video_url: videoUrl,
           language: selectedLanguage,
-          transcription: transcriptionData.transcription
+          transcription: transcriptionArray
         });
 
       if (insertError) throw insertError;
 
-      setTranscript(transcriptionData.transcription);
+      setTranscript(transcriptionArray);
       toast.success('Transcription completed');
     } catch (error) {
       console.error('Transcription error:', error);

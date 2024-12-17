@@ -26,7 +26,20 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         {/* Root redirect */}
-        <Route path="/" element={<Navigate to="/student/dashboard" replace />} />
+        <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
+
+        {/* Admin routes */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Navigate to="/admin/dashboard" replace />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="pages" element={<CMSPages />} />
+          <Route path="pages/new" element={<CMSPageForm />} />
+          <Route path="courses" element={<AdminCourses />} />
+          <Route path="courses/new" element={<CourseForm />} />
+          <Route path="courses/:id" element={<CourseForm />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="settings" element={<AdminSettings />} />
+        </Route>
 
         {/* Student routes */}
         <Route path="/student" element={<StudentLayout />}>
@@ -43,21 +56,8 @@ export default function App() {
           <Route path="assignments" element={<Assignments />} />
         </Route>
 
-        {/* Admin routes */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<Navigate to="/admin/dashboard" replace />} />
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="pages" element={<CMSPages />} />
-          <Route path="pages/new" element={<CMSPageForm />} />
-          <Route path="courses" element={<AdminCourses />} />
-          <Route path="courses/new" element={<CourseForm />} />
-          <Route path="courses/:id" element={<CourseForm />} />
-          <Route path="users" element={<AdminUsers />} />
-          <Route path="settings" element={<AdminSettings />} />
-        </Route>
-
         {/* Catch all redirect */}
-        <Route path="*" element={<Navigate to="/student/dashboard" replace />} />
+        <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
       </Routes>
     </BrowserRouter>
   );

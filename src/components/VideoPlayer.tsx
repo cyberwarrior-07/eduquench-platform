@@ -1,11 +1,12 @@
 import React from 'react';
 import { Card } from './ui/card';
-import { Progress } from './ui/progress';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { VideoControls } from './video-player/VideoControls';
 import { TranscriptDisplay } from './video-player/TranscriptDisplay';
 import { LanguageSelector } from './video-player/LanguageSelector';
+import { VideoProgress } from './video-player/VideoProgress';
+import { VideoOverlay } from './video-player/VideoOverlay';
 
 interface VideoPlayerProps {
   videoUrl: string;
@@ -71,32 +72,6 @@ export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) =
     }
   };
 
-  const fetchTranscription = async (language: string) => {
-    try {
-      const { data: existingTranscription } = await supabase
-        .from('video_transcriptions')
-        .select('transcription')
-        .eq('video_url', videoUrl)
-        .eq('language', language)
-        .single();
-
-      if (existingTranscription?.transcription) {
-        console.log('Found existing transcription for language:', language);
-        const transcriptionData = Array.isArray(existingTranscription.transcription) 
-          ? existingTranscription.transcription 
-          : JSON.parse(existingTranscription.transcription as string);
-        
-        setTranscript(transcriptionData);
-        toast.success('Transcription loaded');
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error('Error fetching transcription:', error);
-      return false;
-    }
-  };
-
   const handleTranscribe = async () => {
     if (!videoUrl) {
       toast.error('No video URL provided');
@@ -106,15 +81,6 @@ export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) =
     setIsTranscribing(true);
     try {
       console.log('Starting transcription for:', videoUrl);
-      
-      // First check if we already have a transcription
-      const hasExisting = await fetchTranscription(selectedLanguage);
-      if (hasExisting) {
-        setIsTranscribing(false);
-        return;
-      }
-
-      // If not, request new transcription
       const { data: transcriptionData, error: transcriptionError } = await supabase.functions.invoke('transcribe-video', {
         body: { videoUrl, targetLanguage: selectedLanguage }
       });
@@ -124,17 +90,6 @@ export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) =
       const transcriptionArray = Array.isArray(transcriptionData.transcription)
         ? transcriptionData.transcription
         : JSON.parse(transcriptionData.transcription as string);
-
-      // Store the transcription
-      const { error: insertError } = await supabase
-        .from('video_transcriptions')
-        .insert({
-          video_url: videoUrl,
-          language: selectedLanguage,
-          transcription: transcriptionArray
-        });
-
-      if (insertError) throw insertError;
 
       setTranscript(transcriptionArray);
       toast.success('Transcription completed');
@@ -149,12 +104,7 @@ export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) =
   const handleLanguageChange = async (value: string) => {
     setSelectedLanguage(value);
     if (videoUrl) {
-      setIsTranscribing(true);
-      const hasExisting = await fetchTranscription(value);
-      if (!hasExisting) {
-        handleTranscribe();
-      }
-      setIsTranscribing(false);
+      await handleTranscribe();
     }
   };
 
@@ -179,41 +129,27 @@ export const VideoPlayer = ({ videoUrl, title, instructor }: VideoPlayerProps) =
           src={videoUrl}
           onTimeUpdate={handleTimeUpdate}
         />
-        {instructor && (
-          <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-md">
-            <img
-              src={`https://api.dicebear.com/7.x/initials/svg?seed=${instructor}`}
-              alt={instructor}
-              className="w-10 h-10 rounded-full"
-            />
-          </div>
-        )}
         
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-          <div className="space-y-4">
-            <Progress 
-              value={progress} 
-              className="h-1 bg-white/20 [&>[role=progressbar]]:bg-primary" 
+        <VideoOverlay instructor={instructor}>
+          <VideoProgress progress={progress} />
+          
+          <div className="flex items-center justify-between gap-4">
+            <VideoControls
+              isPlaying={isPlaying}
+              isMuted={isMuted}
+              onPlayPause={togglePlay}
+              onRestart={handleRestart}
+              onMuteToggle={toggleMute}
+              onFullscreen={handleFullscreen}
+              onTranscribe={handleTranscribe}
+              isTranscribing={isTranscribing}
             />
-            
-            <div className="flex items-center justify-between gap-4">
-              <VideoControls
-                isPlaying={isPlaying}
-                isMuted={isMuted}
-                onPlayPause={togglePlay}
-                onRestart={handleRestart}
-                onMuteToggle={toggleMute}
-                onFullscreen={handleFullscreen}
-                onTranscribe={handleTranscribe}
-                isTranscribing={isTranscribing}
-              />
-              <LanguageSelector
-                value={selectedLanguage}
-                onChange={handleLanguageChange}
-              />
-            </div>
+            <LanguageSelector
+              value={selectedLanguage}
+              onChange={handleLanguageChange}
+            />
           </div>
-        </div>
+        </VideoOverlay>
       </div>
       
       <TranscriptDisplay

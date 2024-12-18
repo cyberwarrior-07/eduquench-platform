@@ -1,11 +1,13 @@
 import { Course } from "@/types/course";
-import { Lock, Clock, BookOpen } from "lucide-react";
+import { Lock, Clock, BookOpen, Play } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { VideoPlayer } from "./VideoPlayer";
 
 interface CourseCardProps {
   course: Course;
@@ -25,16 +27,35 @@ export const CourseCard = ({ course }: CourseCardProps) => {
   return (
     <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg">
       <CardHeader className="p-0">
-        <div className="relative">
+        <div className="relative group">
           <img
             src={course.thumbnail}
             alt={course.title}
-            className="h-48 w-full object-cover"
+            className="h-48 w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
           {course.isLocked && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/50">
               <Lock className="h-8 w-8 text-white" />
             </div>
+          )}
+          {!course.isLocked && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
+                    <Play className="h-5 w-5 text-white" />
+                    <span className="text-white font-medium">Preview</span>
+                  </div>
+                </button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl">
+                <VideoPlayer
+                  videoUrl="https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                  title={course.title}
+                  instructor={course.instructor}
+                />
+              </DialogContent>
+            </Dialog>
           )}
           <div className="absolute top-2 right-2 flex gap-2">
             <Badge variant={course.isLocked ? "secondary" : "default"}>
